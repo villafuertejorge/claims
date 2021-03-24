@@ -1,0 +1,199 @@
+
+CREATE TABLE claims.cl_district (
+	id serial NOT NULL,
+	name varchar(100) NOT null,
+	CONSTRAINT cl_district_pk PRIMARY KEY (id)
+);
+
+CREATE TABLE claims.cl_ta (
+	id serial NOT NULL,
+	"name" varchar(100) NOT NULL,
+	district_id int4 NOT NULL,
+	CONSTRAINT cl_ta_pk PRIMARY KEY (id),
+	CONSTRAINT cl_ta_fk FOREIGN KEY (district_id) REFERENCES claims.cl_district(id)
+);
+
+CREATE TABLE claims.cl_village (
+	id serial NOT NULL,
+	"name" varchar(100) NOT NULL,
+	ta_id int4 NOT NULL,
+	CONSTRAINT cl_village_pk PRIMARY KEY (id),
+	CONSTRAINT cl_village_fk FOREIGN KEY (ta_id) REFERENCES claims.cl_ta(id)
+);
+
+CREATE TABLE claims.cl_zone (
+	id serial NOT NULL,
+	"name" varchar(100) NOT NULL,
+	village_id int4 NOT NULL,
+	CONSTRAINT cl_zone_pk PRIMARY KEY (id),
+	CONSTRAINT cl_zone_fk FOREIGN KEY (village_id) REFERENCES claims.cl_village(id)
+);
+
+CREATE TABLE claims.cl_programs (
+	id serial NOT NULL,
+	"name" varchar(100) NOT NULL,
+	CONSTRAINT cl_programs_pk PRIMARY KEY (id)
+);
+
+CREATE TABLE claims.cl_transfer_institutions (
+	id serial NOT NULL,
+	"name" varchar(100) NOT NULL,
+	CONSTRAINT cl_transfer_institutions_pk PRIMARY KEY (id)
+);
+
+CREATE TABLE claims.cl_claim_actions (
+	id serial NOT NULL,
+	"name" varchar(100) NOT NULL,
+	CONSTRAINT cl_claim_actions_pk PRIMARY KEY (id)
+);
+
+CREATE TABLE claims.cl_claim_types (
+	id serial NOT NULL,
+	"name" varchar(100) NOT NULL,
+	CONSTRAINT cl_claim_types_pk PRIMARY KEY (id)
+);
+
+CREATE TABLE claims.cl_program_claim_types (
+	id serial NOT NULL,
+	claim_type_id int4 NOT NULL,
+	program_id int4 NOT NULL,
+	CONSTRAINT cl_program_claim_types_pk PRIMARY KEY (id),
+	CONSTRAINT cl_program_claim_types_fk FOREIGN KEY (claim_type_id) REFERENCES claims.cl_claim_types(id),
+	CONSTRAINT cl_program_claim_types_fk_1 FOREIGN KEY (program_id) REFERENCES claims.cl_programs(id)
+);
+
+CREATE TABLE claims.cl_claims (
+	id serial NOT NULL,
+	claim_number varchar(50) not null,
+	district_id int4 ,
+	ta_id int4 ,
+	village_id int4 ,
+	zone_id int4 ,
+	site_name varchar(100),
+	transfer_institution_id int4 , 
+	agency_name varchar(100),
+	claim_type_id int4, 
+	amount_of_the_claim numeric(15,2),
+	observation text,
+	officer_name varchar(100),
+	officer_position varchar(50),
+	created_at timestamp ,
+	amount_to_be_transferred numeric(15,2),
+	created_by varchar(50),
+	CONSTRAINT cl_claims_pk PRIMARY KEY (id),
+	CONSTRAINT cl_claims_fk FOREIGN KEY (district_id) REFERENCES claims.cl_district(id),
+	CONSTRAINT cl_claims_fk_1 FOREIGN KEY (ta_id) REFERENCES claims.cl_ta(id),
+	CONSTRAINT cl_claims_fk_2 FOREIGN KEY (village_id) REFERENCES claims.cl_village(id),
+	CONSTRAINT cl_claims_fk_3 FOREIGN KEY (zone_id) REFERENCES claims.cl_zone(id),
+	CONSTRAINT cl_claims_fk_4 FOREIGN KEY (transfer_institution_id) REFERENCES claims.cl_transfer_institutions(id),
+	CONSTRAINT cl_claims_fk_5 FOREIGN KEY (claim_type_id) REFERENCES claims.cl_claim_types(id)
+);
+
+CREATE TABLE claims.cl_claim_statuses (
+	id serial NOT NULL,
+	claim_id int4 NOT NULL,
+	status varchar(20) NOT NULL,
+	created_at timestamp NOT NULL,
+	closed_at timestamp NULL,
+	error_description text NULL,
+	created_by varchar(50),
+	CONSTRAINT cl_claim_statuses_pk PRIMARY KEY (id),
+	CONSTRAINT cl_claim_statuses_fk FOREIGN KEY (claim_id) REFERENCES claims.cl_claims(id)
+);
+
+CREATE TABLE claims.cl_actions_registry (
+	id serial NOT NULL,
+	claim_id int4 NOT NULL,
+	claim_action_id int4 NOT NULL,
+	details text,
+	action_result varchar(20) not null,
+	created_at timestamp NOT NULL,
+	closed_at timestamp NULL,
+	created_by varchar(50),
+	observation text,
+	CONSTRAINT cl_actions_registry_pk PRIMARY KEY (id),
+	CONSTRAINT cl_actions_registry_fk FOREIGN KEY (claim_id) REFERENCES claims.cl_claims(id),
+	CONSTRAINT cl_actions_registry_fk_1 FOREIGN KEY (claim_action_id) REFERENCES claims.cl_claim_actions(id)
+);
+
+CREATE TABLE claims.cl_households_claim (
+	id serial NOT NULL,
+	claim_id int4 NOT NULL,
+	program_id int4 NOT NULL,
+	district_id int4 NULL,
+	ta_id int4 NULL,
+	village_id int4 NULL,
+	zone_id int4 NULL,
+	household_id int4 NOT NULL,
+	household_code varchar(50) NOT NULL,
+	address varchar(50),
+	telephone varchar(15),
+	payment_receiver_id int4 ,
+	payment_receiver_name varchar(100),
+	alternative_receiver_id int4 ,
+	alternative_receiver_name varchar(100) ,
+	external_receiver_id int4 ,
+	external_receiver_name varchar(100) ,
+	payment_receiver_code varchar(50) ,
+	alternative_receiver_code varchar(50) ,
+	external_receiver_code varchar(50) ,
+	CONSTRAINT cl_households_claim_pk PRIMARY KEY (id),
+	CONSTRAINT cl_households_claim_fk FOREIGN KEY (claim_id) REFERENCES claims.cl_claims(id),
+	CONSTRAINT cl_households_claim_fk_1 FOREIGN KEY (program_id) REFERENCES claims.cl_programs(id),
+	CONSTRAINT cl_households_claim_fk_2 FOREIGN KEY (district_id) REFERENCES claims.cl_district(id),
+	CONSTRAINT cl_households_claim_fk_3 FOREIGN KEY (ta_id) REFERENCES claims.cl_ta(id),
+	CONSTRAINT cl_households_claim_fk_4 FOREIGN KEY (village_id) REFERENCES claims.cl_village(id),
+	CONSTRAINT cl_households_claim_fk_5 FOREIGN KEY (zone_id) REFERENCES claims.cl_zone(id)
+);
+comment on column claims.cl_households_claim.household_id is 'household id in MIS-platform';
+
+CREATE TABLE claims.cl_household_members_claim (
+	id serial NOT NULL,
+	household_claim_id int4 not null,
+	hh_member_id int4 NOT NULL,
+	first_name varchar(50),
+	last_name varchar(50),
+	age int4,
+	CONSTRAINT cl_household_members_claim_pk PRIMARY KEY (id),
+	CONSTRAINT cl_household_members_claim_fk FOREIGN KEY (household_claim_id) REFERENCES claims.cl_households_claim(id)
+);
+comment on column claims.cl_household_members_claim.hh_member_id is 'member id in MIS-platform';
+
+
+-- claims.cl_claim_types
+INSERT INTO claims.cl_claim_types
+("name")
+VALUES('The officer retained the beneficiary''s document without making the transfer to the beneficiary');
+INSERT INTO claims.cl_claim_types
+("name")
+VALUES('The officer stamped the passbook but did not delivered the transference, and gave no explanation about it');
+INSERT INTO claims.cl_claim_types
+("name")
+VALUES('Demand of fee/commission');
+INSERT INTO claims.cl_claim_types
+("name")
+VALUES('Received lower amount (partial transfer)');
+INSERT INTO claims.cl_claim_types
+("name")
+VALUES('Transfer was not credited (no transfer)');
+INSERT INTO claims.cl_claim_types
+("name")
+VALUES('Identity theft to receive transfers without the consent of the transfer receiver');
+INSERT INTO claims.cl_claim_types
+("name")
+VALUES('No liquidity/ Lack of cash');
+INSERT INTO claims.cl_claim_types
+("name")
+VALUES('Beneficiary has never received passbook');
+INSERT INTO claims.cl_claim_types
+("name")
+VALUES('Beneficiary has never received SIM card/ATM card');
+INSERT INTO claims.cl_claim_types
+("name")
+VALUES('Beneficiaries may be obliged to give shares to others without valid reasons (extortion)');
+INSERT INTO claims.cl_claim_types
+("name")
+VALUES('Demands for  participation  in  political  activities  and  threats, as a condition to deliver the cash');
+
+
+
