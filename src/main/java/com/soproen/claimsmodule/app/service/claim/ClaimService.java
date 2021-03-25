@@ -9,4 +9,6 @@ public interface ClaimService {
 	ClClaim registerNewClaimForHousehold(RegisterNewClaimForHouseholdDTO registerNewClaimForHouseholdDTO)
 			throws ServiceException;
 
+	ClClaim findClClaimById(Long idClClaim) throws ServiceException;
+
 }

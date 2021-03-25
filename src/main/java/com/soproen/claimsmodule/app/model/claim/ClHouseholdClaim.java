@@ -12,11 +12,14 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.soproen.claimsmodule.app.model.catalog.ClDistrict;
+import com.soproen.claimsmodule.app.model.catalog.ClProgram;
 import com.soproen.claimsmodule.app.model.catalog.ClTa;
 import com.soproen.claimsmodule.app.model.catalog.ClVillage;
 import com.soproen.claimsmodule.app.model.catalog.ClZone;
@@ -38,6 +41,11 @@ public class ClHouseholdClaim implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
+	@ManyToOne
+	@JoinColumn(name="program_id")
+	@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+	private ClProgram clProgram;
 	
 	@ManyToOne
 	@JoinColumn(name="district_id")

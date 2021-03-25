@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,10 +30,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/claim")
 public class ClaimController extends AbstractParentController {
 
-	
 	@Autowired
 	private ClaimService claimService;
-	
+
 	@PostMapping("/registerNewClaimForHousehold")
 	public ResponseEntity<?> registerNewClaimForHousehold(
 			@Validated(BasicValidation.class) @Valid @RequestBody RegisterNewClaimForHouseholdDTO registerNewClaimForHouseholdDTO,
@@ -41,12 +42,42 @@ public class ClaimController extends AbstractParentController {
 				return new ResponseEntity<Map<String, Object>>(super.responseError("Validation Error", bindingResult),
 						HttpStatus.OK);
 			}
-			ClClaimDTO clClaimDTO = utilities.mapObject(claimService.registerNewClaimForHousehold(registerNewClaimForHouseholdDTO),ClClaimDTO.class);
+			ClClaimDTO clClaimDTO = utilities.mapObject(
+					claimService.registerNewClaimForHousehold(registerNewClaimForHouseholdDTO), ClClaimDTO.class);
 			return new ResponseEntity<Map<String, Object>>(super.responseOK("OK", clClaimDTO), HttpStatus.OK);
 		} catch (ServiceException e) {
 			log.error("registerNewClaimForHousehold = {} ", e.getMessage());
 			return new ResponseEntity<Map<String, Object>>(super.responseError(e.getMessage()), HttpStatus.OK);
 		}
 	}
+
+	@GetMapping("/findClaimById/{idClClaim}")
+	public ResponseEntity<?> findClaimById(@PathVariable(name = "idClClaim", required = true) Long idClClaim) {
+		try {
+
+			ClClaimDTO clClaimDTO = utilities.mapObject(claimService.findClClaimById(idClClaim), ClClaimDTO.class);
+			return new ResponseEntity<Map<String, Object>>(super.responseOK("OK", clClaimDTO), HttpStatus.OK);
+		} catch (ServiceException e) {
+			log.error("findClaimById = {} ", e.getMessage());
+			return new ResponseEntity<Map<String, Object>>(super.responseError(e.getMessage()), HttpStatus.OK);
+		}
+	}
 	
+	@PostMapping("/updateClaim")
+	public ResponseEntity<?> updateClaim(
+			@Validated(BasicValidation.class) @Valid @RequestBody ClClaimDTO clClaimDTO,
+			BindingResult bindingResult) {
+		try {
+			if (bindingResult.hasErrors()) {
+				return new ResponseEntity<Map<String, Object>>(super.responseError("Validation Error", bindingResult),
+						HttpStatus.OK);
+			}
+			
+			return new ResponseEntity<Map<String, Object>>(super.responseOK("OK", null), HttpStatus.OK);
+		} catch (ServiceException e) {
+			log.error("updateClaim = {} ", e.getMessage());
+			return new ResponseEntity<Map<String, Object>>(super.responseError(e.getMessage()), HttpStatus.OK);
+		}
+	}
+
 }

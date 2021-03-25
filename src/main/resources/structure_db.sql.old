@@ -32,6 +32,7 @@ CREATE TABLE claims.cl_zone (
 CREATE TABLE claims.cl_programs (
 	id serial NOT NULL,
 	"name" varchar(100) NOT NULL,
+	is_editable varchar(3) NULL DEFAULT 'YES'::character varying,
 	CONSTRAINT cl_programs_pk PRIMARY KEY (id)
 );
 
@@ -160,6 +161,22 @@ CREATE TABLE claims.cl_household_members_claim (
 comment on column claims.cl_household_members_claim.hh_member_id is 'member id in MIS-platform';
 
 
+
+--
+INSERT INTO claims.cl_programs
+(id, "name", is_editable)
+VALUES(1, 'TestEmergencyMalawiSP', 'YES');
+INSERT INTO claims.cl_programs
+(id, "name", is_editable)
+VALUES(2, 'SampleCCT', 'YES');
+INSERT INTO claims.cl_programs
+(id, "name", is_editable)
+VALUES(3, 'CONDITIONAL CASH TRANSFER NA1', 'YES');
+INSERT INTO claims.cl_programs
+(id, "name", is_editable)
+VALUES(4, 'CCTsample-NA', 'YES');
+
+
 -- claims.cl_claim_types
 INSERT INTO claims.cl_claim_types
 ("name")
@@ -195,5 +212,1622 @@ INSERT INTO claims.cl_claim_types
 ("name")
 VALUES('Demands for  participation  in  political  activities  and  threats, as a condition to deliver the cash');
 
+
+
+
+
+INSERT INTO claims.cl_district
+(id, "name")
+VALUES(1, 'Chitipa');
+INSERT INTO claims.cl_district
+(id, "name")
+VALUES(2, 'Likoma');
+INSERT INTO claims.cl_district
+(id, "name")
+VALUES(3, 'Machinga');
+INSERT INTO claims.cl_district
+(id, "name")
+VALUES(4, 'Mangochi');
+INSERT INTO claims.cl_district
+(id, "name")
+VALUES(5, 'Mchinji');
+INSERT INTO claims.cl_district
+(id, "name")
+VALUES(6, 'Phalombe');
+INSERT INTO claims.cl_district
+(id, "name")
+VALUES(7, 'Salima');
+INSERT INTO claims.cl_district
+(id, "name")
+VALUES(2022, 'Balaka');
+INSERT INTO claims.cl_district
+(id, "name")
+VALUES(2313, 'Thyolo');
+INSERT INTO claims.cl_district
+(id, "name")
+VALUES(3252, 'Mwanza');
+INSERT INTO claims.cl_district
+(id, "name")
+VALUES(3629, 'Nsanje');
+INSERT INTO claims.cl_district
+(id, "name")
+VALUES(3630, 'Chikwawa');
+INSERT INTO claims.cl_district
+(id, "name")
+VALUES(3631, 'Mulanje');
+INSERT INTO claims.cl_district
+(id, "name")
+VALUES(3632, 'Zomba');
+INSERT INTO claims.cl_district
+(id, "name")
+VALUES(3633, 'Mzimba North');
+INSERT INTO claims.cl_district
+(id, "name")
+VALUES(3634, 'Neno');
+INSERT INTO claims.cl_district
+(id, "name")
+VALUES(3730, 'Mzimba South');
+INSERT INTO claims.cl_district
+(id, "name")
+VALUES(5100, 'Dedza');
+INSERT INTO claims.cl_district
+(id, "name")
+VALUES(5448, 'Nkhatabay');
+INSERT INTO claims.cl_district
+(id, "name")
+VALUES(7457, 'Karonga');
+INSERT INTO claims.cl_district
+(id, "name")
+VALUES(7458, 'Kasungu');
+INSERT INTO claims.cl_district
+(id, "name")
+VALUES(7459, 'Rumphi');
+INSERT INTO claims.cl_district
+(id, "name")
+VALUES(7460, 'Chiradzulu');
+INSERT INTO claims.cl_district
+(id, "name")
+VALUES(7472, 'Nkhotakota');
+INSERT INTO claims.cl_district
+(id, "name")
+VALUES(7478, 'Ntchisi');
+INSERT INTO claims.cl_district
+(id, "name")
+VALUES(7482, 'Dowa');
+INSERT INTO claims.cl_district
+(id, "name")
+VALUES(7487, 'Blantyre');
+INSERT INTO claims.cl_district
+(id, "name")
+VALUES(7490, 'Ntcheu');
+INSERT INTO claims.cl_district
+(id, "name")
+VALUES(7494, 'Lilongwe Rural');
+
+--
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(8, 'Mwenemisuku', 1);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(9, 'Kameme', 1);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(10, 'Mwenewenya', 1);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(11, 'Nthalire', 1);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(12, 'Mwabulambya', 1);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(13, 'Mkumpha', 2);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(14, 'Chikweo', 3);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(15, 'Liwonde', 3);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(16, 'Mposa', 3);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(17, 'Nsanama', 3);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(18, 'Sitola', 3);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(19, 'Nkoola', 3);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(20, 'Chamba', 3);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(21, 'Nkula', 3);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(22, 'Kapoloma', 3);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(23, 'Chiwalo', 3);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(24, 'Ngokwe', 3);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(25, 'Mlomba', 3);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(26, 'Mponda', 4);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(27, 'Nankumba', 4);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(28, 'Jalasi', 4);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(29, 'Katuli', 4);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(30, 'Makanjira', 4);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(31, 'Chimwala', 4);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(32, 'Chowe', 4);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(33, 'Bwananyambi', 4);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(34, 'Namavi', 4);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(35, 'Mkanda', 5);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(36, 'Mlonyeni', 5);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(37, 'Nyoka', 5);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(38, 'Simphasi', 5);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(39, 'Zulu', 5);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(40, 'Dambe', 5);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(41, 'Kapondo', 5);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(42, 'Mavwere', 5);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(43, 'Mduwa', 5);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(44, 'Mkhumba', 6);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(45, 'Nazombe', 6);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(46, 'Jenala', 6);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(47, 'Kaduya', 6);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(48, 'Chiwalo', 6);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(49, 'Nkhulambe', 6);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(50, 'Khombedza', 7);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(51, 'Kuluunda', 7);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(52, 'Maganga', 7);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(53, 'Kalonga', 7);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(54, 'Pemba', 7);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(55, 'Ndindi', 7);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(56, 'Mwanza', 7);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(57, 'Msosa', 7);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(58, 'Kambwiri', 7);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(59, 'Kambalame', 7);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(2111, 'Salima', 7);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(2292, 'Kachenga', 2022);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(2314, 'Bvumbwe', 2313);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(2327, 'Chimaliro', 2313);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(2375, 'Kalembo', 2022);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(2465, 'KAMBWIR', 7);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(2491, 'Ngolongoliwa', 2313);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(2520, 'Nsabwe', 2313);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(2565, 'Thukuta', 2313);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(2607, 'Amidu', 2022);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(2676, 'Nkaya', 2022);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(2684, 'Changata', 2313);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(2694, 'Mbawera', 2313);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(2727, 'Thomas', 2313);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(2812, 'Mphuka', 2313);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(2870, 'Khwethemule', 2313);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(2937, 'Nanseta', 2313);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(2989, 'Chanthunya', 2022);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(3040, 'Sawali', 2022);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(3045, 'Nsamala', 2022);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(3253, 'Kanduku', 3252);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(3254, 'Nthache', 3252);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(3255, 'Govati', 3252);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(3427, 'Makanjira', 7);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(3508, 'Nyambi', 3);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(3635, 'Nkapita', 3632);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(3668, 'Dambe', 3634);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(3685, 'Mlolo', 3629);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(3753, 'Nkanda', 3631);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(3782, 'Chindi', 3730);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(3783, 'Kampingo Sibande', 3730);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(3794, 'Jilavikuwa', 3633);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(3809, 'Makhuwira', 3630);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(3849, 'Ngwelero', 3632);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(3899, 'Chapananga', 3630);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(4033, 'Kuntumanji', 3632);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(4063, 'Nkagula', 3632);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(4116, 'Juma', 3631);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(4117, 'Mpherembe', 3633);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(4175, 'Mchinguza', 3);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(4177, 'Kawinga', 3);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(4311, 'Khosolo', 3730);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(4356, 'Nyachikadza', 3629);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(4357, 'Ndamera', 3629);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(4394, 'Mlauli', 3634);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(4606, 'Mwambo', 3632);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(4689, 'Ngowe', 3630);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(4690, 'Masache', 3630);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(4691, 'Ndakwela', 3630);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(4758, 'Chikowi', 3632);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(4787, 'Kampingo Sibande', 3633);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(4816, 'Mabuka', 3631);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(4864, 'Mabilabo', 3730);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(4959, 'Makoko', 3629);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(4975, 'Symon', 3634);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(4999, 'Chekucheku', 3634);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(5023, 'Ngabu', 3629);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(5024, 'Mbelwa', 3730);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(5101, 'Chauma', 5100);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(5126, 'Malemia', 3632);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(5166, 'Mkumbila', 3632);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(5179, 'Mlumbe', 3632);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(5190, 'Ntholowa', 3632);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(5234, 'Mbiza', 3632);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(5255, 'Chikumbu', 3631);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(5320, 'Mthiramanja', 3631);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(5365, 'Njema', 3631);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(5449, 'TIMBIRI', 5448);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(5511, 'Kaphuka', 5100);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(5685, 'MALANDA', 5448);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(5686, 'FUKAMALAZA', 5448);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(5803, 'Katunga', 3630);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(5833, 'Kasisi', 3630);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(5862, 'Lundu', 3630);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(5897, 'Mankhambira', 5448);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(5950, 'Tengani', 3629);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(6029, 'Mtwalo', 3633);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(6256, 'Mbenje', 3629);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(6291, 'Mzukuzuku', 3730);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(6320, 'Maseya', 3630);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(6321, 'Mlilima', 3630);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(6382, 'Fukamapiri', 5448);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(6383, 'Malengamzoma', 5448);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(6424, 'Chimombo', 3629);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(6468, 'Zilakoma', 5448);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(6493, 'Kachere', 5100);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(6553, 'Mkumbira', 5448);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(6554, 'Nyalubanga', 5448);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(6669, 'Ngabu', 3630);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(6698, 'Mzikubola', 3730);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(6836, 'Chilikumwendo', 5100);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(6869, 'Malemia', 3629);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(6924, 'Kabunduli', 5448);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(6983, 'Kamenyagwaza', 5100);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7038, 'Kasumbu', 5100);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7135, 'Tambala', 5100);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7144, 'Boghoyo', 5448);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7145, 'Mkondowe', 5448);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7146, 'Mbwana', 5448);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7242, 'Kachindamoto', 5100);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7341, 'Nchilamwela', 2313);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7342, 'Kapichi', 2313);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7456, 'Mzuzu City', 3633);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7461, 'Chitera', 7460);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7462, 'Kadewere', 7460);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7463, 'Likoswe', 7460);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7464, 'Maoni', 7460);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7465, 'Mpama', 7460);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7466, 'Mpunga', 7460);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7467, 'Nkalo', 7460);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7468, 'Ntchema', 7460);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7469, 'Onga', 7460);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7470, 'Sadrack', 7460);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7538, 'Kyungu', 7457);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7540, 'Mwakaboko', 7457);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7541, 'Mwirangombe', 7457);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7543, 'Wasambo', 7457);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7545, 'Kilipula', 7457);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7721, 'chikho', 7478);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7722, 'chilooko', 7478);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7723, 'kalumo', 7478);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7724, 'kasakula', 7478);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7725, 'malenga', 7478);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7726, 'Nthondo', 7478);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7727, 'Vuso Jere', 7478);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7728, 'Chitekwere', 7494);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7735, 'Dzoole', 7482);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7744, 'Kafuzira', 7472);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7756, 'Chakhumbira', 7490);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7790, 'Mbangombe', 7494);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7858, 'Lundu', 7487);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7895, 'Mdunga', 7458);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7913, 'Chapinduka', 7459);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7925, 'Chikulamayembe', 7459);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7935, 'Katumbi', 7459);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7943, 'Kachulu', 7459);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7950, 'Chigaru', 7487);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7956, 'Nyaza', 7458);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7958, 'Chisovya', 7459);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7963, 'Mwalweni', 7459);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7972, 'Mwamlowe', 7459);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7975, 'Kanyenda', 7472);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7979, 'Mwankhunikira', 7459);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7989, 'Zolokere', 7459);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(7996, 'Mwahenga', 7459);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(8005, 'Somba', 7487);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(8016, 'Mponela', 7482);
+INSERT INTO claims.cl_ta
+(id, "name", district_id)
+VALUES(8049, 'Njikula', 7459);
+
+--
+
+
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(574, 'Kabotola', 8);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(577, 'Kaleghania Chibula', 8);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(579, 'Malamula', 8);
+
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(582, 'Mwamalange ', 8);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(583, 'Yolamu', 8);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(584, 'Chiwanga', 9);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(585, 'Ipenza Titi', 9);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(587, 'James Kameme', 9);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(589, 'Lunda Navitengo', 9);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(591, 'Ibuluma Chisenga', 10);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(593, 'Kamiramphande Mfinda', 10);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(596, 'Kayilizi Nyimbili', 10);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(598, 'Mulembe Chuba', 10);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(600, 'Temwamkondo Bale', 10);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(605, 'Chalaghala ', 11);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(606, 'Kamphyongo', 11);
+
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(620, 'Chendo', 12);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(621, 'Chinunkha ', 12);
+
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(624, 'Ichinga Mswero', 12);
+
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(628, 'Katutula Siyombwe', 12);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(629, 'Lufita 1', 12);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(630, 'Lufita 2 ', 12);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(631, 'Ifumbo', 12);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(632, 'Masyesye', 12);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(635, 'Mkombanyama 1', 12);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(636, 'Mkombanyama 2', 12);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(637, 'Mkombanyama 3', 12);
+
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(639, 'Mwenefuvya', 12);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(640, 'Mwenibanda 1', 12);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(641, 'Mwenibanda 2', 12);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(642, 'Zambwe', 12);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(643, 'Likoma', 13);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(644, 'Likoma not used', 13);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(645, 'Nkhwemba', 13);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(646, 'Chikweo 1', 14);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(647, 'Chikweo 2', 14);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(648, 'Chikuluma ', 15);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(649, 'Mangamba1', 15);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(650, 'Masaka Mwalasa', 15);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(651, 'Mbonechera', 15);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(652, 'Mgundiwanawanga', 15);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(653, 'Mjamba', 15);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(654, 'Mwikala', 15);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(655, 'Naperi', 15);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(656, 'Ngongondo', 15);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(657, 'Nkuna', 15);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(658, 'Nlinde', 15);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(659, 'Nthundu', 15);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(660, 'Nthundu Makote', 15);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(661, 'Singwa', 15);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(663, 'Matache', 16);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(664, 'Mikunga', 16);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(665, 'Mpheta', 16);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(666, 'Mtambalika', 16);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(667, 'Mtamila', 16);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(668, 'Chisuwi 1', 17);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(669, 'Chisuwi 2', 17);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(670, 'Nkhumbwa 1', 17);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(671, 'Nkhumbwa 2', 17);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(672, 'Nsanama 1', 17);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(673, 'Nsanama 2', 17);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(674, 'Nyama 1 N', 17);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(675, 'Nyama 2 N', 17);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(676, 'Chikuwita', 19);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(677, 'Chitimba', 19);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(678, 'Issa', 19);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(679, 'Madi', 19);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(680, 'Mitusi', 19);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(681, 'Mlimbula', 19);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(682, 'Namwini', 19);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(683, 'Ngunga', 19);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(684, 'Ntaja Chipanga', 19);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(685, 'Phwiti Ngalawango', 19);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(686, 'Kaluma', 20);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(687, 'Mitawa', 20);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(688, 'Mpita', 20);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(689, 'Msumbo', 20);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(690, 'Nanda', 20);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(691, 'Puteya', 20);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(692, 'Chitinji', 23);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(693, 'Sale', 23);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(694, 'Umbwa', 23);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(696, 'Lambulira-Mapata', 25);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(697, 'Malopa Nkanga', 25);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(698, 'Malowa', 25);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(699, 'Namunde', 25);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(700, 'Mbawe Chipojola', 25);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(701, 'Mchema', 25);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(702, 'Mlomba', 25);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(704, 'Pulika', 25);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(705, 'Saidi Mataka', 25);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(706, 'Chiwaula K', 29);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(707, 'Katuli', 29);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(708, 'Kwisimba', 29);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(710, 'Luwalika', 29);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(711, 'Maleta', 29);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(712, 'Mpita', 29);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(713, 'Mpwakata', 29);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(714, 'Mtelera', 29);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(715, 'Ngalipa', 29);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(716, 'Nsalule', 29);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(717, 'Bakili 1', 30);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(718, 'Bakili 2', 30);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(719, 'Binali 1', 30);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(720, 'Binali 2', 30);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(721, 'Binali 3', 30);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(722, 'Lulanga 1', 30);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(723, 'Lulanga 2', 30);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(724, 'Lulanga 3', 30);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(725, 'Makanjira 1', 30);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(726, 'Makanjira 2', 30);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(727, 'Makanjira 3', 30);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(728, 'Makanjira 4', 30);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(729, 'Chilipa', 31);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(730, 'Jekete', 31);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(731, 'Leveni', 31);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(732, 'Mtonda 1', 31);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(733, 'Mtonda 2', 31);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(734, 'Nikisi', 31);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(735, 'Songa 2', 31);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(736, 'Songa 1', 31);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(737, 'Chimesya', 32);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(738, 'Chiunda', 32);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(739, 'Masi', 32);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(740, 'Misolo 1', 32);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(741, 'Misolo 2', 32);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(742, 'Mitawa', 32);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(743, 'Nkata 1', 32);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(744, 'Nkata 2', 32);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(746, 'Chalunda', 40);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(748, 'Chimwala', 40);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(750, 'Kakunga', 40);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(753, 'Mphanda', 40);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(754, 'Mtopola', 40);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(756, 'Panye', 40);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(757, 'Chikonza', 43);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(758, 'Chimongo', 43);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(761, 'Mduwa', 43);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(762, 'Mkangala', 43);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(763, 'Mnzama', 43);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(764, 'Mtunga', 43);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(765, 'Nduwa', 43);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(766, 'Sundwe', 43);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(767, 'Guwende', 42);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(769, 'Kalilangwe', 42);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(771, 'Mangwale', 42);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(772, 'Manthalu', 42);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(773, 'Mavwere', 42);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(774, 'Mkonkha', 42);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(775, 'Mkusabisai', 42);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(778, 'Mzingo', 42);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(779, 'Nsilombe', 42);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(781, 'Sinumbe', 42);
+
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(783, 'Chikorwe', 35);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(784, 'Chisamba', 35);
+
+
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(792, 'Matuwamba', 35);
+
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(794, 'Mbewa', 35);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(795, 'Mkanda', 35);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(797, 'Ngolomi', 35);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(798, 'Kamwendo', 39);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(801, 'Mgulula', 39);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(802, 'Mseche', 39);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(803, 'Nyamawende', 39);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(804, 'Zulu', 39);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(805, 'Gumulira', 36);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(806, 'Kafulama', 36);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(807, 'Kapita 1', 36);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(808, 'Kapita 2', 36);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(809, 'Menyani', 36);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(810, 'Mlonyeni', 36);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(812, 'Ndawambe', 36);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(813, 'Pinda', 36);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(814, 'Tsamphale 1', 36);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(815, 'Tsamphale 2', 36);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(816, 'Chankhanga', 41);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(817, 'Chapakama ', 41);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(820, 'Kalulu', 41);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(821, 'Chikomeni', 38);
+INSERT INTO claims.cl_village
+(id, "name", ta_id)
+VALUES(822, 'Chimteka ', 38);
+
+
+--
+
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1085, 'Butuli', 574);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1086, 'Wilindi', 574);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1087, 'Yikonda', 574);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1088, 'Malambwa', 577);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1089, 'Namwitaba', 577);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1090, 'Witera', 577);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1091, 'Kalembe', 579);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1092, 'Nakaposya', 579);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1093, 'Twanda', 579);
+
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1097, 'Kabala', 582);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1100, 'Mselema', 583);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1101, 'Mughofi', 583);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1102, 'Mwalukani', 583);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1103, 'Kunozya', 584);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1104, 'Tigawane', 584);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1105, 'Tiyezye', 584);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1106, 'Chitemwa', 585);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1107, 'Namusohamila', 585);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1108, 'Songwe', 585);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1109, 'Azimanyile', 587);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1110, 'Ngonga', 587);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1111, 'Nsaku', 587);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1112, 'Hasambwe', 589);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1113, 'Indeni', 589);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1114, 'Nakaswiliri', 589);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1115, 'Temwanani', 591);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1116, 'Twayimba', 591);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1117, 'Visasa', 591);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1118, 'Tikolerane', 593);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1119, 'Tikondane', 593);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1120, 'Tovwirane', 593);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1121, 'Kumbukani', 596);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1122, 'Sokwani', 596);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1123, 'Tiyezge', 596);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1124, 'Chinani', 598);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1125, 'Kambonia', 598);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1126, 'Makanthani', 598);
+
+
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1208, 'Chanoka', 640);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1209, 'Chifyo', 640);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1210, 'Wiyule', 640);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1211, 'Kabungwe', 641);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1212, 'Kasimu', 641);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1213, 'Tomati', 641);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1214, 'Chikondi', 642);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1215, 'Lutengano', 642);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1216, 'Twafwane', 642);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1217, 'Alinafe', 643);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1218, 'Chakoma', 643);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1219, 'Tiyanjane', 643);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1220, 'Chiteko', 644);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1221, 'Mocho', 644);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1222, 'Same', 644);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1223, 'Tigwirizane', 645);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1224, 'Tiyanjane', 645);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1225, 'Yoma', 645);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1226, 'M gwiriza', 646);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1227, 'Mikuyu', 646);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1228, 'Mtawa', 646);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1229, 'Mgwirizano', 647);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1230, 'Mwima', 647);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1231, 'Ntapwa', 647);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1232, 'Kachere', 648);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1233, 'Nkongomwa', 648);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1234, 'Namingalala', 648);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1235, 'Mbawa', 649);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1236, 'Nkongomwa', 649);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1237, 'Namatunu', 649);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1238, 'Kaombe', 650);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1240, 'Tayamba', 650);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1241, 'Chiwalo', 651);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1242, 'Linji', 651);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1243, 'Nsau', 651);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1244, 'Mgoza', 652);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1245, 'Mtangaye', 652);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1246, 'Mbweso', 653);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1247, 'Mjamba', 653);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1248, 'Mnembo', 653);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1249, 'Mmwala', 654);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1250, 'Namisangu', 654);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1251, 'Kachere', 655);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1252, 'Maiwa', 655);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1253, 'Naperi', 655);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1254, 'Nlingula', 656);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1255, 'Mgwirizano', 656);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1256, 'Mtewe', 656);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1257, 'Mango', 657);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1258, 'Mtondowoko', 657);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1259, 'Nankhundi', 657);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1260, 'Chisangalalo', 658);
+
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1263, 'Chitembwere', 659);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1264, 'Nangondo', 659);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1265, 'Chikondi', 659);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1266, 'Chikondi', 660);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1267, 'Nangondo', 660);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1268, 'Sinji', 660);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1269, 'Chigumula', 661);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1270, 'Mkwinda', 661);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1271, 'Singwa', 661);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1275, 'Kafe', 663);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1276, 'Thandizo', 663);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1277, 'Chilomoni', 664);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1278, 'Chitembo', 664);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1279, 'Lisanjala', 664);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1280, 'Msikidzi', 665);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1281, 'Tigwirizane', 665);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1282, 'Tikondane', 665);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1283, 'Chanyungu', 666);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1284, 'Chikala', 666);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1285, 'Nabunkhwi', 666);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1286, 'Matanda', 667);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1287, 'Namichere', 667);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1288, 'Mwaiwathu', 668);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1289, 'Nakasanje', 668);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1290, 'Tiyamike', 668);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1291, 'Mtendere', 669);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1292, 'Talandira', 669);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1293, 'Tiyanjane', 669);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1294, 'Bilila', 670);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1295, 'Mwalasi', 670);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1296, 'Namiriko', 670);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1297, 'Madzianjuchi', 671);
+INSERT INTO claims.cl_zone
+(id, "name", village_id)
+VALUES(1298, 'Mgwirizano', 671);
 
 

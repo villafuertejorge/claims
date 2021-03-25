@@ -14,10 +14,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.soproen.claimsmodule.app.model.catalog.ClClaimType;
@@ -31,6 +31,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Singular;
 
 @Data
 @Builder
@@ -44,83 +45,86 @@ public class ClClaim implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
-	@Column(name= "claim_number")
+
+	@Column(name = "claim_number")
 	private String claimNumber;
-	
+
 	@ManyToOne
-	@JoinColumn(name="district_id")
+	@JoinColumn(name = "district_id")
 	@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 	private ClDistrict clDistrict;
-	
+
 	@ManyToOne
-	@JoinColumn(name="ta_id")
+	@JoinColumn(name = "ta_id")
 	@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 	private ClTa clTa;
-	
+
 	@ManyToOne
-	@JoinColumn(name="village_id")
+	@JoinColumn(name = "village_id")
 	@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 	private ClVillage clVillage;
-	
+
 	@ManyToOne
-	@JoinColumn(name="zone_id")
+	@JoinColumn(name = "zone_id")
 	@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 	private ClZone clZone;
-	
-	@Column(name= "site_name")
+
+	@Column(name = "site_name")
 	private String siteName;
-	
+
 	@ManyToOne
-	@JoinColumn(name="transfer_institution_id")
+	@JoinColumn(name = "transfer_institution_id")
 	@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 	private ClTransferInstitution clTransferInstitution;
-	
-	@Column(name= "agency_name")
+
+	@Column(name = "agency_name")
 	private String agencyName;
-	
+
 	@ManyToOne
-	@JoinColumn(name="claim_type_id")
+	@JoinColumn(name = "claim_type_id")
 	@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 	private ClClaimType clClaimType;
-	
-	@Column(name= "amount_of_the_claim")
+
+	@Column(name = "amount_of_the_claim")
 	private Double amountOfTheClaim;
-	
-	@Column(name= "observation")
+
+	@Column(name = "observation")
 	private String observation;
-	
-	@Column(name= "officer_name")
+
+	@Column(name = "officer_name")
 	private String officerName;
-	
-	@Column(name= "officer_position")
+
+	@Column(name = "officer_position")
 	private String officerPosition;
-	
+
 	@Column(name = "created_at")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date createdAt;
-	
-	@Column(name= "amount_to_be_transferred")
+
+	@Column(name = "amount_to_be_transferred")
 	private Double amountToBeTransferred;
-	
-	@Column(name= "created_by")
+
+	@Column(name = "created_by")
 	private String createdBy;
-	
+
+	@Singular
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonIgnoreProperties(value={ "hibernateLazyInitializer", "handler","clClaim" } ,allowSetters = true)
-	@JoinColumn(name = "claim_id",nullable = false)
+	@JsonIgnoreProperties(value = { "hibernateLazyInitializer", "handler", "clClaim" }, allowSetters = true)
+	@JoinColumn(name = "claim_id", nullable = false)
 	private List<ClClaimStatus> clClaimStatuses;
 	
+	@Singular
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JsonIgnoreProperties(value = { "hibernateLazyInitializer", "handler", "clClaim" }, allowSetters = true)
+	@JoinColumn(name = "claim_id", nullable = false)
+	private List<ClClaimActionRegistry> clClaimActionsRegistries;
+
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonIgnoreProperties(value={ "hibernateLazyInitializer", "handler","clClaim" } ,allowSetters = true)
-	@JoinColumn(name = "claim_id",nullable = false)
-	private List<ClClaimActionRegistry> clClaimActionsRegistry;
+	@JsonIgnoreProperties(value = { "hibernateLazyInitializer", "handler", "clClaim" }, allowSetters = true)
+	@JoinColumn(name = "claim_id", nullable = false)
+	private List<ClHouseholdClaim> clHouseholdsClaim;
 	
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonIgnoreProperties(value={ "hibernateLazyInitializer", "handler","clClaim" } ,allowSetters = true)
-	@JoinColumn(name = "claim_id",nullable = false)
-	private ClHouseholdClaim clHouseholdClaim;
-	
-	
+	@Transient
+	private ClHouseholdMemberClaim selectedMemberHowPresentClaim;
 
 }
