@@ -1,5 +1,6 @@
 package com.soproen.claimsmodule.app.service.claim;
 
+import com.soproen.claimsdto.dto.claim.ClClaimDTO;
 import com.soproen.claimsdto.dto.claim.RegisterNewClaimForHouseholdDTO;
 import com.soproen.claimsmodule.app.exceptions.ServiceException;
 import com.soproen.claimsmodule.app.model.claim.ClClaim;
@@ -10,5 +11,7 @@ public interface ClaimService {
 			throws ServiceException;
 
 	ClClaim findClClaimById(Long idClClaim) throws ServiceException;
+
+	ClClaim updateClaim(ClClaimDTO clClaimDTO) throws ServiceException;
 
 }

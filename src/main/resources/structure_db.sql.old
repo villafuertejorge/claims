@@ -150,11 +150,12 @@ comment on column claims.cl_households_claim.household_id is 'household id in MI
 
 CREATE TABLE claims.cl_household_members_claim (
 	id serial NOT NULL,
-	household_claim_id int4 not null,
+	household_claim_id int4 NOT NULL,
 	hh_member_id int4 NOT NULL,
-	first_name varchar(50),
-	last_name varchar(50),
-	age int4,
+	first_name varchar(50) NULL,
+	last_name varchar(50) NULL,
+	age int4 NULL,
+	is_presented_claim bool NULL DEFAULT false,
 	CONSTRAINT cl_household_members_claim_pk PRIMARY KEY (id),
 	CONSTRAINT cl_household_members_claim_fk FOREIGN KEY (household_claim_id) REFERENCES claims.cl_households_claim(id)
 );

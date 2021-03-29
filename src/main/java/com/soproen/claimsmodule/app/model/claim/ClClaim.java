@@ -3,6 +3,7 @@ package com.soproen.claimsmodule.app.model.claim;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -20,6 +21,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.soproen.claimsmodule.app.enums.RequiredClaimFiledsEnum;
 import com.soproen.claimsmodule.app.model.catalog.ClClaimType;
 import com.soproen.claimsmodule.app.model.catalog.ClDistrict;
 import com.soproen.claimsmodule.app.model.catalog.ClTa;
@@ -126,5 +128,9 @@ public class ClClaim implements Serializable {
 	
 	@Transient
 	private ClHouseholdMemberClaim selectedMemberHowPresentClaim;
+	@Transient
+	private String applicationUserName;
+	@Transient
+	private Map<RequiredClaimFiledsEnum, String> mapResultClaimFieldsValidation;
 
 }

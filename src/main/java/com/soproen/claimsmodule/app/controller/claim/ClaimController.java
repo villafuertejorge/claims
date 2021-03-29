@@ -65,19 +65,21 @@ public class ClaimController extends AbstractParentController {
 	
 	@PostMapping("/updateClaim")
 	public ResponseEntity<?> updateClaim(
-			@Validated(BasicValidation.class) @Valid @RequestBody ClClaimDTO clClaimDTO,
+			@Validated(BasicValidation.class) @Valid @RequestBody ClClaimDTO clClaimDTOTmp,
 			BindingResult bindingResult) {
 		try {
 			if (bindingResult.hasErrors()) {
 				return new ResponseEntity<Map<String, Object>>(super.responseError("Validation Error", bindingResult),
 						HttpStatus.OK);
 			}
-			
-			return new ResponseEntity<Map<String, Object>>(super.responseOK("OK", null), HttpStatus.OK);
+			ClClaimDTO clClaimDTO = utilities.mapObject(claimService.updateClaim(clClaimDTOTmp), ClClaimDTO.class);
+			return new ResponseEntity<Map<String, Object>>(super.responseOK("OK", clClaimDTO), HttpStatus.OK);
 		} catch (ServiceException e) {
 			log.error("updateClaim = {} ", e.getMessage());
 			return new ResponseEntity<Map<String, Object>>(super.responseError(e.getMessage()), HttpStatus.OK);
 		}
 	}
+	
+	
 
 }
