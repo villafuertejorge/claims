@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.soproen.claimsdto.dto.BasicValidation;
+import com.soproen.claimsdto.dto.catalog.ClClaimActionDTO;
 import com.soproen.claimsdto.dto.catalog.ClClaimTypeDTO;
 import com.soproen.claimsdto.dto.catalog.ClDistrictDTO;
 import com.soproen.claimsdto.dto.catalog.ClProgramDTO;
@@ -258,4 +259,31 @@ public class CatalogController extends AbstractParentController {
 		}
 	}
 
+	@GetMapping("/retrieveAllClaimActions")
+	public ResponseEntity<?> retrieveAllClaimActions() {
+		try {
+			List<ClClaimActionDTO> claimActionList = utilities.mapObject(catalogService.retrieveAllClaimActions(),
+					new TypeReference<List<ClClaimActionDTO>>() {
+					});
+			return new ResponseEntity<Map<String, Object>>(super.responseOK("OK", claimActionList), HttpStatus.OK);
+		} catch (ServiceException e) {
+			log.error("retrieveAllClaimTypes = {}", e.getMessage());
+			return new ResponseEntity<Map<String, Object>>(super.responseError("Failed - retrieve all claim actions"),
+					HttpStatus.OK);
+		}
+	}
+
+	@GetMapping("/retrieveClClaimActionById/{idClClaimAction}")
+	public ResponseEntity<?> retrieveClClaimActionById(
+			@PathVariable(name = "idClClaimAction", required = true) Long idClClaimAction) {
+		try {
+			ClClaimActionDTO claimAction = utilities.mapObject(catalogService.findClClaimActionById(idClClaimAction),
+					ClClaimActionDTO.class);
+			return new ResponseEntity<Map<String, Object>>(super.responseOK("OK", claimAction), HttpStatus.OK);
+		} catch (ServiceException e) {
+			log.error("retrieveClClaimActionById = {}", e.getMessage());
+			return new ResponseEntity<Map<String, Object>>(super.responseError("Retrieve Claim Action fail"), HttpStatus.OK);
+		}
+	}
+	
 }

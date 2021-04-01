@@ -1832,3 +1832,35 @@ INSERT INTO claims.cl_zone
 VALUES(1298, 'Mgwirizano', 671);
 
 
+
+
+INSERT INTO claims.cl_transfer_institutions
+(id, name)
+VALUES(1, 'BANK A1');
+INSERT INTO claims.cl_transfer_institutions
+(id, name)
+VALUES(2, 'BANK B1');
+INSERT INTO claims.cl_transfer_institutions
+(id, name)
+VALUES(3, 'BANK C1');
+INSERT INTO claims.cl_transfer_institutions
+(id, name)
+VALUES(4, 'BANK D1');
+INSERT INTO claims.cl_transfer_institutions
+(id, name)
+VALUES(5, 'Banco PIC');
+INSERT INTO claims.cl_transfer_institutions
+(id, name)
+VALUES(6, 'Pro Bank Young');
+INSERT INTO claims.cl_transfer_institutions
+(id, name)
+VALUES(8, 'Banco GYE ');
+INSERT INTO claims.cl_transfer_institutions
+(id, name)
+VALUES(9, 'Banco GYE111 ');
+INSERT INTO claims.cl_transfer_institutions
+(id, name)
+VALUES(10, 'Banco GYE111 ');
+INSERT INTO claims.cl_transfer_institutions
+(id, name)
+VALUES(11, 'Banco GYE111 ');

@@ -53,4 +53,12 @@ public class Utilities {
 		return isObjectIdentifiable(identifiableObj)?identifiableObj.getId():null;
 	}
 	
+	public Boolean isNullOrEmpty(String value) {
+		return isNull(value) || value.isEmpty();
+	}
+	
+	public Boolean isNull(Object value) {
+		return value == null ;
+	}
+	
 }

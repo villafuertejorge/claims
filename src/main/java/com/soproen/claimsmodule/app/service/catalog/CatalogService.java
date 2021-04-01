@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.soproen.claimsdto.dto.catalog.ClSaveProgramWithClaimTypesDTO;
 import com.soproen.claimsmodule.app.exceptions.ServiceException;
+import com.soproen.claimsmodule.app.model.catalog.ClClaimAction;
 import com.soproen.claimsmodule.app.model.catalog.ClClaimType;
 import com.soproen.claimsmodule.app.model.catalog.ClDistrict;
 import com.soproen.claimsmodule.app.model.catalog.ClProgram;
@@ -44,5 +45,9 @@ public interface CatalogService {
 	List<ClTransferInstitution> retrieveAllTransferInstitutions() throws ServiceException;
 
 	ClTransferInstitution findClTransferInstitutionById(Long id) throws ServiceException;
+
+	List<ClClaimAction> retrieveAllClaimActions() throws ServiceException;
+
+	ClClaimAction findClClaimActionById(Long id) throws ServiceException;
 
 }

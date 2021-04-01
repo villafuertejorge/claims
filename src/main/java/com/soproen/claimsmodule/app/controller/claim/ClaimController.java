@@ -1,5 +1,6 @@
 package com.soproen.claimsmodule.app.controller.claim;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.validation.Valid;
@@ -16,9 +17,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.soproen.claimsdto.dto.BasicValidation;
 import com.soproen.claimsdto.dto.claim.ClClaimDTO;
 import com.soproen.claimsdto.dto.claim.RegisterNewClaimForHouseholdDTO;
+import com.soproen.claimsdto.dto.claim.SearchClaimDTO;
 import com.soproen.claimsmodule.app.controller.AbstractParentController;
 import com.soproen.claimsmodule.app.exceptions.ServiceException;
 import com.soproen.claimsmodule.app.service.claim.ClaimService;
@@ -79,6 +82,34 @@ public class ClaimController extends AbstractParentController {
 			return new ResponseEntity<Map<String, Object>>(super.responseError(e.getMessage()), HttpStatus.OK);
 		}
 	}
+	
+	@PostMapping("/searchClaim")
+	public ResponseEntity<?> searchClaim( @RequestBody SearchClaimDTO searchClaimDTO) {
+		try {
+			List<ClClaimDTO> claimList = utilities.mapObject(
+					claimService.searchClaim(searchClaimDTO),
+					new TypeReference<List<ClClaimDTO>>() {
+					});
+			return new ResponseEntity<Map<String, Object>>(super.responseOK("OK", claimList), HttpStatus.OK);
+		} catch (ServiceException e) {
+			log.error("updateClaim = {} ", e.getMessage());
+			return new ResponseEntity<Map<String, Object>>(super.responseError(e.getMessage()), HttpStatus.OK);
+		}
+	}
+	
+	@PostMapping("/registerClaimAction")
+	public ResponseEntity<?> registerClaimAction( @RequestBody SearchClaimDTO searchClaimDTO) {
+		try {
+			
+			
+			
+			return new ResponseEntity<Map<String, Object>>(super.responseOK("OK", null), HttpStatus.OK);
+		} catch (ServiceException e) {
+			log.error("registerClaimAction = {} ", e.getMessage());
+			return new ResponseEntity<Map<String, Object>>(super.responseError(e.getMessage()), HttpStatus.OK);
+		}
+	}
+	
 	
 	
 

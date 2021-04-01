@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.soproen.claimsdto.dto.catalog.ClSaveProgramWithClaimTypesDTO;
 import com.soproen.claimsmodule.app.exceptions.ServiceException;
+import com.soproen.claimsmodule.app.model.catalog.ClClaimAction;
 import com.soproen.claimsmodule.app.model.catalog.ClClaimType;
 import com.soproen.claimsmodule.app.model.catalog.ClDistrict;
 import com.soproen.claimsmodule.app.model.catalog.ClProgram;
@@ -16,6 +17,8 @@ import com.soproen.claimsmodule.app.model.catalog.ClTa;
 import com.soproen.claimsmodule.app.model.catalog.ClTransferInstitution;
 import com.soproen.claimsmodule.app.model.catalog.ClVillage;
 import com.soproen.claimsmodule.app.model.catalog.ClZone;
+import com.soproen.claimsmodule.app.model.claim.ClClaimActionRegistry;
+import com.soproen.claimsmodule.app.repository.catalog.ClClaimActionRepositoty;
 import com.soproen.claimsmodule.app.repository.catalog.ClClaimTypeRepository;
 import com.soproen.claimsmodule.app.repository.catalog.ClDistrictRepository;
 import com.soproen.claimsmodule.app.repository.catalog.ClProgramRepository;
@@ -44,6 +47,8 @@ public class CatalogServiceImpl implements CatalogService {
 	private ClZoneRepository clZoneRepository;
 	@Autowired
 	private ClTransferInstitutionRepository clTransferInstitutionRepository;
+	@Autowired
+	private ClClaimActionRepositoty clClaimActionRepositoty;
 
 	@Override
 	@Transactional(readOnly = true)
@@ -221,4 +226,26 @@ public class CatalogServiceImpl implements CatalogService {
 		}
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public List<ClClaimAction> retrieveAllClaimActions() throws ServiceException {
+		try {
+			return clClaimActionRepositoty.findAll();
+		} catch (DataAccessException e) {
+			log.error("retrieveAllClaimActions = {} ", e.getMessage());
+			throw new ServiceException(e.getMessage());
+		}
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public ClClaimAction findClClaimActionById(Long id) throws ServiceException {
+		try {
+			return clClaimActionRepositoty.findById(id).get();
+		} catch (DataAccessException e) {
+			log.error("findClClaimActionById = {} ", e.getMessage());
+			throw new ServiceException(e.getMessage());
+		}
+	}
+	
 }
