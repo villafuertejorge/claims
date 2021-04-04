@@ -23,7 +23,7 @@ public class BeansConfiguration {
 	}
 	
 	@Bean
-	public RestTemplate restTemplateCompliance(RestTemplateBuilder builder) {
+	public RestTemplate restTemplatePayments(RestTemplateBuilder builder) {
 		return builder.rootUri(urlPaymentsModule).build();
 	}
 }

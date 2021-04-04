@@ -39,7 +39,7 @@ public class ClClaimActionRegistry implements Serializable {
 	private Long id;
 	
 	@ManyToOne
-	@JoinColumn(name = "claim_action_id", insertable = false, updatable = false)
+	@JoinColumn(name = "claim_action_id")
 	@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "clActionRegistry" })
 	private ClClaimAction clClaimAction;
 	
@@ -64,5 +64,12 @@ public class ClClaimActionRegistry implements Serializable {
 	
 	@Column(name = "observation")
 	private String observation;
+	
+	@Column(name = "claim_details")
+	private String claimDetails;
+	
+	@Column(name = "action_date")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date actionDate;
 
 }

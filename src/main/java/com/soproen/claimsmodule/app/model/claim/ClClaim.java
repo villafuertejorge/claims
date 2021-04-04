@@ -116,7 +116,7 @@ public class ClClaim implements Serializable {
 	private List<ClClaimStatus> clClaimStatuses;
 	
 	@Singular
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnoreProperties(value = { "hibernateLazyInitializer", "handler", "clClaim" }, allowSetters = true)
 	@JoinColumn(name = "claim_id", nullable = false)
 	private List<ClClaimActionRegistry> clClaimActionsRegistries;

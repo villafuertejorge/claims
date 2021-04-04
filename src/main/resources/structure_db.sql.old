@@ -106,12 +106,14 @@ CREATE TABLE claims.cl_actions_registry (
 	id serial NOT NULL,
 	claim_id int4 NOT NULL,
 	claim_action_id int4 NOT NULL,
-	details text,
-	action_result varchar(20) not null,
+	details text NULL,
+	action_result varchar(20) NOT NULL,
 	created_at timestamp NOT NULL,
 	closed_at timestamp NULL,
-	created_by varchar(50),
-	observation text,
+	created_by varchar(50) NULL,
+	observation text NULL,
+	claim_details text NULL,
+	action_date timestamp(0) NULL,
 	CONSTRAINT cl_actions_registry_pk PRIMARY KEY (id),
 	CONSTRAINT cl_actions_registry_fk FOREIGN KEY (claim_id) REFERENCES claims.cl_claims(id),
 	CONSTRAINT cl_actions_registry_fk_1 FOREIGN KEY (claim_action_id) REFERENCES claims.cl_claim_actions(id)
@@ -1864,3 +1866,36 @@ VALUES(10, 'Banco GYE111 ');
 INSERT INTO claims.cl_transfer_institutions
 (id, name)
 VALUES(11, 'Banco GYE111 ');
+
+
+
+INSERT INTO claims.cl_claim_actions
+(id, "name")
+VALUES(1, 'Telephone call to the beneficiary/transfer receiver');
+INSERT INTO claims.cl_claim_actions
+(id, "name")
+VALUES(2, 'Telephone call to the Transfer Institution');
+INSERT INTO claims.cl_claim_actions
+(id, "name")
+VALUES(3, 'Home visit to the beneficiary/transfer receiver');
+INSERT INTO claims.cl_claim_actions
+(id, "name")
+VALUES(4, 'Visit to the Transfer Institution');
+INSERT INTO claims.cl_claim_actions
+(id, "name")
+VALUES(5, 'Send a written communication to the Transfer Institution');
+INSERT INTO claims.cl_claim_actions
+(id, "name")
+VALUES(6, 'Contact with the community/village leader');
+INSERT INTO claims.cl_claim_actions
+(id, "name")
+VALUES(7, 'Meet with a representative of the Transfer Institution (virtual or face-to-face)');
+INSERT INTO claims.cl_claim_actions
+(id, "name")
+VALUES(8, 'Send a text message to the beneficiary/transfer receiver');
+INSERT INTO claims.cl_claim_actions
+(id, "name")
+VALUES(9, 'Send a text message to the Transfer Institution');
+INSERT INTO claims.cl_claim_actions
+(id, "name")
+VALUES(10, 'Send a written communication to the beneficiary/transfer receiver');

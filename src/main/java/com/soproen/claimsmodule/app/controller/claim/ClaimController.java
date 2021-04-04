@@ -1,5 +1,8 @@
 package com.soproen.claimsmodule.app.controller.claim;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.soproen.claimsdto.dto.BasicValidation;
 import com.soproen.claimsdto.dto.claim.ClClaimDTO;
+import com.soproen.claimsdto.dto.claim.GenerateSearchClaimCsvFileDTO;
+import com.soproen.claimsdto.dto.claim.RegisterNewClaimActionDTO;
 import com.soproen.claimsdto.dto.claim.RegisterNewClaimForHouseholdDTO;
 import com.soproen.claimsdto.dto.claim.SearchClaimDTO;
 import com.soproen.claimsmodule.app.controller.AbstractParentController;
@@ -97,20 +102,36 @@ public class ClaimController extends AbstractParentController {
 		}
 	}
 	
-	@PostMapping("/registerClaimAction")
-	public ResponseEntity<?> registerClaimAction( @RequestBody SearchClaimDTO searchClaimDTO) {
+	@PostMapping("/registerNewClaimAction")
+	public ResponseEntity<?> registerNewClaimAction(
+			@Validated(BasicValidation.class) @Valid @RequestBody RegisterNewClaimActionDTO registerNewClaimActionDTO,
+			BindingResult bindingResult) {
 		try {
-			
-			
-			
-			return new ResponseEntity<Map<String, Object>>(super.responseOK("OK", null), HttpStatus.OK);
+			if (bindingResult.hasErrors()) {
+				return new ResponseEntity<Map<String, Object>>(super.responseError("Validation Error", bindingResult),
+						HttpStatus.OK);
+			}
+			ClClaimDTO clClaimDTO = utilities.mapObject(
+					claimService.registerNewClaimAction(registerNewClaimActionDTO), ClClaimDTO.class);
+			return new ResponseEntity<Map<String, Object>>(super.responseOK("OK", clClaimDTO), HttpStatus.OK);
 		} catch (ServiceException e) {
-			log.error("registerClaimAction = {} ", e.getMessage());
+			log.error("registerNewClaimAction = {} ", e.getMessage());
 			return new ResponseEntity<Map<String, Object>>(super.responseError(e.getMessage()), HttpStatus.OK);
 		}
 	}
 	
 	
-	
+	@PostMapping("/generateSearchClaimCsvFile")
+	public ResponseEntity<?> generateSearchClaimCsvFile( @RequestBody SearchClaimDTO searchClaimDTO) {
+		try {
+			InputStream inputStream = claimService.generateSearchClaimCsvFile(searchClaimDTO);
+			String encodedString = Base64.getEncoder().encodeToString(inputStream.readAllBytes());
+			return new ResponseEntity<Map<String, Object>>(super.responseOK("OK", GenerateSearchClaimCsvFileDTO.builder().encodedString(encodedString).build()), HttpStatus.OK);
+		} catch (ServiceException | IOException e) {
+			log.error("generateSearchClaimCsvFile = {} ", e.getMessage());
+			return new ResponseEntity<Map<String, Object>>(super.responseError(e.getMessage()), HttpStatus.OK);
+		}
+	}
+		
 
 }

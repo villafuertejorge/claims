@@ -1,5 +1,6 @@
 package com.soproen.claimsmodule.app.service.claim;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -7,6 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +22,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.soproen.claimsdto.dto.claim.ClClaimDTO;
+import com.soproen.claimsdto.dto.claim.RegisterNewClaimActionDTO;
 import com.soproen.claimsdto.dto.claim.RegisterNewClaimForHouseholdDTO;
 import com.soproen.claimsdto.dto.claim.SearchClaimDTO;
+import com.soproen.claimsmodule.app.Utilities.CsvUtils;
 import com.soproen.claimsmodule.app.Utilities.Utilities;
+import com.soproen.claimsmodule.app.enums.ClClaimActionResultEnum;
 import com.soproen.claimsmodule.app.enums.ClClaimStatusEnum;
 import com.soproen.claimsmodule.app.enums.RequiredClaimFiledsEnum;
 import com.soproen.claimsmodule.app.exceptions.ServiceException;
+import com.soproen.claimsmodule.app.model.catalog.ClClaimAction;
 import com.soproen.claimsmodule.app.model.catalog.ClDistrict;
 import com.soproen.claimsmodule.app.model.catalog.ClProgram;
 import com.soproen.claimsmodule.app.model.catalog.ClTa;
@@ -36,8 +42,10 @@ import com.soproen.claimsmodule.app.model.claim.ClClaim;
 import com.soproen.claimsmodule.app.model.claim.ClClaimActionRegistry;
 import com.soproen.claimsmodule.app.model.claim.ClClaimStatus;
 import com.soproen.claimsmodule.app.model.claim.ClHouseholdClaim;
+import com.soproen.claimsmodule.app.model.claim.ClHouseholdMemberClaim;
 import com.soproen.claimsmodule.app.repository.claim.ClClaimRepository;
 import com.soproen.claimsmodule.app.repository.dinamicsearch.ClaimsSpecs;
+import com.soproen.claimsmodule.app.service.catalog.CatalogService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -51,6 +59,10 @@ public class ClaimServiceImpl implements ClaimService {
 	private ClClaimRepository clClaimRepository;
 	@Autowired
 	private Environment env;
+	@Autowired
+	private CatalogService  catalogService;
+	@Autowired
+	private CsvUtils csvUtils;
 
 	@Override
 	@Transactional
@@ -197,6 +209,59 @@ public class ClaimServiceImpl implements ClaimService {
 		return mapResult;
 
 	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public InputStream generateSearchClaimCsvFile(SearchClaimDTO searchClaimDTO) throws ServiceException{
+		try {
+			
+			List<ClClaim> list = searchClaim(searchClaimDTO);
+			List<Object[]> dataList = list.stream().map(tmp -> {
+				
+				
+				String selectedMemberFistName = "";
+				String selectedMemberLastName = ""; 
+				Optional<ClHouseholdMemberClaim> optionalSelectedMember = tmp.getClHouseholdsClaim().get(0).getClHouseholdMembersClaim().stream().filter(obj -> obj.isPresentedClaim).findAny();
+				if(optionalSelectedMember.isPresent()) {
+					selectedMemberFistName=optionalSelectedMember.get().getFirstName();
+					selectedMemberLastName=optionalSelectedMember.get().getLastName();
+				}
+				
+				
+				ClClaimStatus clClaimStatus = tmp.getClClaimStatuses().stream().filter(obj -> obj.getClosedAt()==null).findAny().get();
+				
+				String[] array = new String[] {
+						tmp.getClaimNumber(),
+						tmp.getClHouseholdsClaim().get(0).getHouseholdCode(),
+						tmp.getClHouseholdsClaim().get(0).getClProgram()!=null ?tmp.getClHouseholdsClaim().get(0).getClProgram().getName():"",
+						tmp.getClHouseholdsClaim().get(0).getClDistrict()!=null ?tmp.getClHouseholdsClaim().get(0).getClDistrict().getName():"",
+						tmp.getClHouseholdsClaim().get(0).getClTa()!=null?tmp.getClHouseholdsClaim().get(0).getClTa().getName():"",
+						tmp.getClHouseholdsClaim().get(0).getClVillage()!=null?tmp.getClHouseholdsClaim().get(0).getClVillage().getName():"",
+						tmp.getClHouseholdsClaim().get(0).getClZone()!=null?tmp.getClHouseholdsClaim().get(0).getClZone().getName():"",
+						selectedMemberFistName,
+						selectedMemberLastName,
+						tmp.getClTransferInstitution()!=null?tmp.getClTransferInstitution().getName():"",
+						clClaimStatus.getStatus().name(),
+						tmp.getCreatedBy()
+				};
+				
+				return array;
+				
+			}).collect(Collectors.toList());
+			
+			
+			InputStream newInputSream = csvUtils.createCsvFile(dataList,
+					new String[] { "Claim Number","Form Number","Program Name","District","TA","Village","Zone","First Name","Last Name","Transfer Institution","Status","User" });
+
+			return newInputSream;
+			
+			
+		} catch (DataAccessException e) {
+			log.error("generateSearchClaimCsvFile = {} ", e.getMessage());
+			throw new ServiceException(e.getMessage());
+		}
+	}
+	
 
 	@Override
 	@Transactional(readOnly = true)
@@ -293,6 +358,73 @@ public class ClaimServiceImpl implements ClaimService {
 		}
 		claimList = clClaimRepository.findAll(specificaitionClaimTmp, sortedByPriceDesc).toList();
 		return claimList;
+	}
+
+	@Override
+	@Transactional
+	public ClClaim registerNewClaimAction(RegisterNewClaimActionDTO registerNewClaimActionDTO)
+			throws ServiceException {
+		try {
+
+			Date currentDate = Calendar.getInstance().getTime();
+			ClClaim newClClaim = clClaimRepository.findById(registerNewClaimActionDTO.getClaimId())
+					.orElseThrow(() -> new ServiceException("Claim not found"));
+			ClClaimAction clClaimAction = catalogService.findClClaimActionById(registerNewClaimActionDTO.getClClaimAction().getId());
+			ClClaimActionResultEnum claimActionResult = ClClaimActionResultEnum.valueOf(registerNewClaimActionDTO.getClaimActionResult().name());
+			
+			newClClaim.getClClaimActionsRegistries().stream()
+					.forEach(obj -> {
+						if(obj.getClosedAt() == null) {
+							obj.setClosedAt(currentDate);
+						}
+					});
+			
+			log.info("clClaimAction = {}" , clClaimAction);
+			
+			newClClaim.getClClaimActionsRegistries().add(ClClaimActionRegistry.builder()
+					.clClaimAction(clClaimAction)
+					.claimDetails(registerNewClaimActionDTO.getClaimDetails())
+					.actionResult(claimActionResult)
+					.details(registerNewClaimActionDTO.getClaimResultDetails())
+					.actionDate(registerNewClaimActionDTO.getClaimActionDate())
+					.usernameCreatedBy(registerNewClaimActionDTO.getCreatedByUsername())
+					.createdAt(currentDate)
+					.build()
+					);
+			
+			newClClaim.getClClaimStatuses().stream().forEach(clClaimStatusesTmp -> {
+				if (clClaimStatusesTmp.getClosedAt() == null) {
+					clClaimStatusesTmp.setClosedAt(currentDate);
+				}
+			});
+			
+			
+			if(claimActionResult.equals(ClClaimActionResultEnum.ACCEPT)) {
+				newClClaim.setAmountToBeTransferred(registerNewClaimActionDTO.getAmountToBeTransferred());
+				// change status to accepted
+				newClClaim.getClClaimStatuses()
+				.add(ClClaimStatus.builder().createdAt(currentDate)
+						.status(ClClaimStatusEnum.ACCEPTED)
+						.createdAt(currentDate).usernameCreatedBy(registerNewClaimActionDTO.getCreatedByUsername()).build());
+				
+				// send amount to payments module
+				
+			}else {
+				// change status to reject or open
+				newClClaim.getClClaimStatuses()
+				.add(ClClaimStatus.builder().createdAt(currentDate)
+						.status(claimActionResult.equals(ClClaimActionResultEnum.OPEN_CLAIM) ? ClClaimStatusEnum.OPEN:ClClaimStatusEnum.REJECTED)
+						.createdAt(currentDate).usernameCreatedBy(registerNewClaimActionDTO.getCreatedByUsername()).build());
+			}
+			
+			log.info("newClClaim = {} ", newClClaim);
+			newClClaim = clClaimRepository.save(newClClaim);
+			return newClClaim;
+		} catch (DataAccessException e) {
+			e.printStackTrace();
+			log.error("registerNewClaimAction = {} ", e.getMessage());
+			throw new ServiceException(e.getMessage());
+		}
 	}
 
 }
