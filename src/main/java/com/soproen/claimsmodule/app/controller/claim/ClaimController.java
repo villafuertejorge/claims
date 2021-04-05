@@ -125,7 +125,11 @@ public class ClaimController extends AbstractParentController {
 	public ResponseEntity<?> generateSearchClaimCsvFile( @RequestBody SearchClaimDTO searchClaimDTO) {
 		try {
 			InputStream inputStream = claimService.generateSearchClaimCsvFile(searchClaimDTO);
-			String encodedString = Base64.getEncoder().encodeToString(inputStream.readAllBytes());
+			
+			byte[] targetArray = new byte[inputStream.available()];
+			inputStream.read(targetArray);
+			
+			String encodedString = Base64.getEncoder().encodeToString(targetArray);
 			return new ResponseEntity<Map<String, Object>>(super.responseOK("OK", GenerateSearchClaimCsvFileDTO.builder().encodedString(encodedString).build()), HttpStatus.OK);
 		} catch (ServiceException | IOException e) {
 			log.error("generateSearchClaimCsvFile = {} ", e.getMessage());
