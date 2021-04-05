@@ -15,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -119,6 +120,7 @@ public class ClClaim implements Serializable {
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnoreProperties(value = { "hibernateLazyInitializer", "handler", "clClaim" }, allowSetters = true)
 	@JoinColumn(name = "claim_id", nullable = false)
+	@OrderBy("id DESC")
 	private List<ClClaimActionRegistry> clClaimActionsRegistries;
 
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)

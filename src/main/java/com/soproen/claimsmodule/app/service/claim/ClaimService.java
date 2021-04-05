@@ -9,6 +9,7 @@ import com.soproen.claimsdto.dto.claim.RegisterNewClaimForHouseholdDTO;
 import com.soproen.claimsdto.dto.claim.SearchClaimDTO;
 import com.soproen.claimsmodule.app.exceptions.ServiceException;
 import com.soproen.claimsmodule.app.model.claim.ClClaim;
+import com.soproen.claimsmodule.app.model.claim.ClHouseholdClaim;
 
 public interface ClaimService {
 
@@ -24,5 +25,8 @@ public interface ClaimService {
 	ClClaim registerNewClaimAction(RegisterNewClaimActionDTO registerNewClaimActionDTO) throws ServiceException;
 
 	InputStream generateSearchClaimCsvFile(SearchClaimDTO searchClaimDTO) throws ServiceException;
+
+	void registerClaimValueInPaymentModule(RegisterNewClaimActionDTO registerNewClaimActionDTO,
+			ClHouseholdClaim clHouseholdClaim);
 
 }

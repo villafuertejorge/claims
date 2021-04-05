@@ -12,19 +12,28 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import com.soproen.claimsdto.dto.claim.ClClaimDTO;
 import com.soproen.claimsdto.dto.claim.RegisterNewClaimActionDTO;
 import com.soproen.claimsdto.dto.claim.RegisterNewClaimForHouseholdDTO;
 import com.soproen.claimsdto.dto.claim.SearchClaimDTO;
+import com.soproen.claimsdto.dto.payments.ResponseRegisterHouseholdClaimValueDTO;
 import com.soproen.claimsmodule.app.Utilities.CsvUtils;
 import com.soproen.claimsmodule.app.Utilities.Utilities;
 import com.soproen.claimsmodule.app.enums.ClClaimActionResultEnum;
@@ -60,9 +69,14 @@ public class ClaimServiceImpl implements ClaimService {
 	@Autowired
 	private Environment env;
 	@Autowired
-	private CatalogService  catalogService;
+	private CatalogService catalogService;
 	@Autowired
 	private CsvUtils csvUtils;
+	@Autowired
+	@Qualifier("restTemplatePayments")
+	private RestTemplate restTemplatePayments;
+	@Value("${app.end-point-register_hh_claim-value}")
+	private String endPointRegisterHouseholdClaimValue;
 
 	@Override
 	@Transactional
@@ -74,6 +88,8 @@ public class ClaimServiceImpl implements ClaimService {
 
 			ClHouseholdClaim clHouseholdClaim = utilities
 					.mapObject(registerNewClaimForHouseholdDTO.getClHouseholdClaim(), ClHouseholdClaim.class);
+			
+			clHouseholdClaim.getClHouseholdMembersClaim().forEach(obj -> obj.setIsPresentedClaim(Boolean.FALSE));
 
 			ClClaim newClClaimTmp = ClClaim.builder().claimNumber("CL-" + currentDate.getTime())
 					.createdBy(registerNewClaimForHouseholdDTO.getUsernameCreatedBy())
@@ -114,7 +130,7 @@ public class ClaimServiceImpl implements ClaimService {
 
 		List<ClClaimActionRegistry> clClaimActionsRegistryList = newClClaim.getClClaimActionsRegistries().stream()
 				.filter(obj -> obj.getClosedAt() == null).collect(Collectors.toList());
-		newClClaim.setClClaimActionsRegistries(clClaimActionsRegistryList);
+		// newClClaim.setClClaimActionsRegistries(clClaimActionsRegistryList);
 
 		List<ClClaimStatus> clClaimStatusesList = newClClaim.getClClaimStatuses().stream()
 				.filter(obj -> obj.getClosedAt() == null).collect(Collectors.toList());
@@ -138,13 +154,16 @@ public class ClaimServiceImpl implements ClaimService {
 			ClClaim clClaim = utilities.mapObject(clClaimDTO, ClClaim.class);
 			log.info(" clClaim = {}", clClaim);
 
-			final Long idSelectedMemberHowPresentClaim = clClaim.getSelectedMemberHowPresentClaim().getId();
-			clClaim.getClHouseholdsClaim().iterator().next().getClHouseholdMembersClaim().stream().forEach(obj -> {
-				obj.setIsPresentedClaim(Boolean.FALSE);
-				if (obj.getId() == idSelectedMemberHowPresentClaim) {
-					obj.setIsPresentedClaim(Boolean.TRUE);
-				}
-			});
+			if (clClaim.getSelectedMemberHowPresentClaim() != null
+					&& clClaim.getSelectedMemberHowPresentClaim().getId() != null) {
+				final Long idSelectedMemberHowPresentClaim = clClaim.getSelectedMemberHowPresentClaim().getId();
+				clClaim.getClHouseholdsClaim().iterator().next().getClHouseholdMembersClaim().stream().forEach(obj -> {
+					obj.setIsPresentedClaim(Boolean.FALSE);
+					if (obj.getId() == idSelectedMemberHowPresentClaim) {
+						obj.setIsPresentedClaim(Boolean.TRUE);
+					}
+				});
+			}
 
 			// close current claim status
 			clClaim.setClClaimStatuses(clClaimRepository.findById(clClaimDTO.getId())
@@ -180,7 +199,7 @@ public class ClaimServiceImpl implements ClaimService {
 		Map<RequiredClaimFiledsEnum, String> mapResult = new HashMap<>();
 
 		if (!clClaim.getClHouseholdsClaim().iterator().next().getClHouseholdMembersClaim().stream()
-				.filter(obj -> obj.isPresentedClaim).findAny().isPresent()) {
+				.filter(obj -> obj.isPresentedClaim!=null && obj.isPresentedClaim).findAny().isPresent()) {
 			mapResult.put(RequiredClaimFiledsEnum.MEMBER_HOW_PRESENT_CLAIM,
 					env.getProperty("app.claim-fields.member-how-present-claim"));
 		}
@@ -209,67 +228,71 @@ public class ClaimServiceImpl implements ClaimService {
 		return mapResult;
 
 	}
-	
+
 	@Override
 	@Transactional(readOnly = true)
-	public InputStream generateSearchClaimCsvFile(SearchClaimDTO searchClaimDTO) throws ServiceException{
+	public InputStream generateSearchClaimCsvFile(SearchClaimDTO searchClaimDTO) throws ServiceException {
 		try {
-			
+
 			List<ClClaim> list = searchClaim(searchClaimDTO);
 			List<Object[]> dataList = list.stream().map(tmp -> {
-				
-				
+
 				String selectedMemberFistName = "";
-				String selectedMemberLastName = ""; 
-				Optional<ClHouseholdMemberClaim> optionalSelectedMember = tmp.getClHouseholdsClaim().get(0).getClHouseholdMembersClaim().stream().filter(obj -> obj.isPresentedClaim).findAny();
-				if(optionalSelectedMember.isPresent()) {
-					selectedMemberFistName=optionalSelectedMember.get().getFirstName();
-					selectedMemberLastName=optionalSelectedMember.get().getLastName();
+				String selectedMemberLastName = "";
+				Optional<ClHouseholdMemberClaim> optionalSelectedMember = tmp.getClHouseholdsClaim().get(0)
+						.getClHouseholdMembersClaim().stream().filter(obj -> obj.isPresentedClaim).findAny();
+				if (optionalSelectedMember.isPresent()) {
+					selectedMemberFistName = optionalSelectedMember.get().getFirstName();
+					selectedMemberLastName = optionalSelectedMember.get().getLastName();
 				}
-				
-				
-				ClClaimStatus clClaimStatus = tmp.getClClaimStatuses().stream().filter(obj -> obj.getClosedAt()==null).findAny().get();
-				
-				String[] array = new String[] {
-						tmp.getClaimNumber(),
+
+				ClClaimStatus clClaimStatus = tmp.getClClaimStatuses().stream().filter(obj -> obj.getClosedAt() == null)
+						.findAny().get();
+
+				String[] array = new String[] { tmp.getClaimNumber(),
 						tmp.getClHouseholdsClaim().get(0).getHouseholdCode(),
-						tmp.getClHouseholdsClaim().get(0).getClProgram()!=null ?tmp.getClHouseholdsClaim().get(0).getClProgram().getName():"",
-						tmp.getClHouseholdsClaim().get(0).getClDistrict()!=null ?tmp.getClHouseholdsClaim().get(0).getClDistrict().getName():"",
-						tmp.getClHouseholdsClaim().get(0).getClTa()!=null?tmp.getClHouseholdsClaim().get(0).getClTa().getName():"",
-						tmp.getClHouseholdsClaim().get(0).getClVillage()!=null?tmp.getClHouseholdsClaim().get(0).getClVillage().getName():"",
-						tmp.getClHouseholdsClaim().get(0).getClZone()!=null?tmp.getClHouseholdsClaim().get(0).getClZone().getName():"",
-						selectedMemberFistName,
-						selectedMemberLastName,
-						tmp.getClTransferInstitution()!=null?tmp.getClTransferInstitution().getName():"",
-						clClaimStatus.getStatus().name(),
-						tmp.getCreatedBy()
-				};
-				
+						tmp.getClHouseholdsClaim().get(0).getClProgram() != null
+								? tmp.getClHouseholdsClaim().get(0).getClProgram().getName()
+								: "",
+						tmp.getClHouseholdsClaim().get(0).getClDistrict() != null
+								? tmp.getClHouseholdsClaim().get(0).getClDistrict().getName()
+								: "",
+						tmp.getClHouseholdsClaim().get(0).getClTa() != null
+								? tmp.getClHouseholdsClaim().get(0).getClTa().getName()
+								: "",
+						tmp.getClHouseholdsClaim().get(0).getClVillage() != null
+								? tmp.getClHouseholdsClaim().get(0).getClVillage().getName()
+								: "",
+						tmp.getClHouseholdsClaim().get(0).getClZone() != null
+								? tmp.getClHouseholdsClaim().get(0).getClZone().getName()
+								: "",
+						selectedMemberFistName, selectedMemberLastName,
+						tmp.getClTransferInstitution() != null ? tmp.getClTransferInstitution().getName() : "",
+						clClaimStatus.getStatus().name(), tmp.getCreatedBy() };
+
 				return array;
-				
+
 			}).collect(Collectors.toList());
-			
-			
+
 			InputStream newInputSream = csvUtils.createCsvFile(dataList,
-					new String[] { "Claim Number","Form Number","Program Name","District","TA","Village","Zone","First Name","Last Name","Transfer Institution","Status","User" });
+					new String[] { "Claim Number", "Form Number", "Program Name", "District", "TA", "Village", "Zone",
+							"First Name", "Last Name", "Transfer Institution", "Status", "User" });
 
 			return newInputSream;
-			
-			
+
 		} catch (DataAccessException e) {
 			log.error("generateSearchClaimCsvFile = {} ", e.getMessage());
 			throw new ServiceException(e.getMessage());
 		}
 	}
-	
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<ClClaim> searchClaim(SearchClaimDTO searchClaimDTO) throws ServiceException {
 		try {
 
-			log.info("searchClaimDTO = {}" , searchClaimDTO);
-			
+			log.info("searchClaimDTO = {}", searchClaimDTO);
+
 			List<Specification<ClClaim>> searchSpecifications = new ArrayList<>();
 
 			if (!utilities.isNullOrEmpty(searchClaimDTO.getClaimNumber())) {
@@ -362,67 +385,99 @@ public class ClaimServiceImpl implements ClaimService {
 
 	@Override
 	@Transactional
-	public ClClaim registerNewClaimAction(RegisterNewClaimActionDTO registerNewClaimActionDTO)
-			throws ServiceException {
+	public ClClaim registerNewClaimAction(RegisterNewClaimActionDTO registerNewClaimActionDTO) throws ServiceException {
 		try {
 
 			Date currentDate = Calendar.getInstance().getTime();
 			ClClaim newClClaim = clClaimRepository.findById(registerNewClaimActionDTO.getClaimId())
 					.orElseThrow(() -> new ServiceException("Claim not found"));
-			ClClaimAction clClaimAction = catalogService.findClClaimActionById(registerNewClaimActionDTO.getClClaimAction().getId());
-			ClClaimActionResultEnum claimActionResult = ClClaimActionResultEnum.valueOf(registerNewClaimActionDTO.getClaimActionResult().name());
-			
-			newClClaim.getClClaimActionsRegistries().stream()
-					.forEach(obj -> {
-						if(obj.getClosedAt() == null) {
-							obj.setClosedAt(currentDate);
-						}
-					});
-			
-			log.info("clClaimAction = {}" , clClaimAction);
-			
-			newClClaim.getClClaimActionsRegistries().add(ClClaimActionRegistry.builder()
-					.clClaimAction(clClaimAction)
-					.claimDetails(registerNewClaimActionDTO.getClaimDetails())
-					.actionResult(claimActionResult)
-					.details(registerNewClaimActionDTO.getClaimResultDetails())
-					.actionDate(registerNewClaimActionDTO.getClaimActionDate())
-					.usernameCreatedBy(registerNewClaimActionDTO.getCreatedByUsername())
-					.createdAt(currentDate)
-					.build()
-					);
-			
+			ClClaimAction clClaimAction = catalogService
+					.findClClaimActionById(registerNewClaimActionDTO.getClClaimAction().getId());
+			ClClaimActionResultEnum claimActionResult = ClClaimActionResultEnum
+					.valueOf(registerNewClaimActionDTO.getClaimActionResult().name());
+
+			newClClaim.getClClaimActionsRegistries().stream().forEach(obj -> {
+				if (obj.getClosedAt() == null) {
+					obj.setClosedAt(currentDate);
+				}
+			});
+
+			log.info("clClaimAction = {}", clClaimAction);
+
+			newClClaim.getClClaimActionsRegistries()
+					.add(ClClaimActionRegistry.builder().clClaimAction(clClaimAction)
+							.claimDetails(registerNewClaimActionDTO.getClaimDetails()).actionResult(claimActionResult)
+							.details(registerNewClaimActionDTO.getClaimResultDetails())
+							.actionDate(registerNewClaimActionDTO.getClaimActionDate())
+							.usernameCreatedBy(registerNewClaimActionDTO.getCreatedByUsername()).createdAt(currentDate)
+							.build());
+
 			newClClaim.getClClaimStatuses().stream().forEach(clClaimStatusesTmp -> {
 				if (clClaimStatusesTmp.getClosedAt() == null) {
 					clClaimStatusesTmp.setClosedAt(currentDate);
 				}
 			});
-			
-			
-			if(claimActionResult.equals(ClClaimActionResultEnum.ACCEPT)) {
+
+			if (claimActionResult.equals(ClClaimActionResultEnum.ACCEPT)) {
 				newClClaim.setAmountToBeTransferred(registerNewClaimActionDTO.getAmountToBeTransferred());
 				// change status to accepted
 				newClClaim.getClClaimStatuses()
-				.add(ClClaimStatus.builder().createdAt(currentDate)
-						.status(ClClaimStatusEnum.ACCEPTED)
-						.createdAt(currentDate).usernameCreatedBy(registerNewClaimActionDTO.getCreatedByUsername()).build());
-				
-				// send amount to payments module
-				
-			}else {
+						.add(ClClaimStatus.builder().createdAt(currentDate).status(ClClaimStatusEnum.ACCEPTED)
+								.createdAt(currentDate)
+								.usernameCreatedBy(registerNewClaimActionDTO.getCreatedByUsername()).build());
+
+				// TODO send amount to payments module
+				registerClaimValueInPaymentModule(registerNewClaimActionDTO, newClClaim.getClHouseholdsClaim().get(0));
+
+			} else {
 				// change status to reject or open
-				newClClaim.getClClaimStatuses()
-				.add(ClClaimStatus.builder().createdAt(currentDate)
-						.status(claimActionResult.equals(ClClaimActionResultEnum.OPEN_CLAIM) ? ClClaimStatusEnum.OPEN:ClClaimStatusEnum.REJECTED)
-						.createdAt(currentDate).usernameCreatedBy(registerNewClaimActionDTO.getCreatedByUsername()).build());
+				newClClaim.getClClaimStatuses().add(ClClaimStatus.builder().createdAt(currentDate)
+						.status(claimActionResult.equals(ClClaimActionResultEnum.OPEN_CLAIM) ? ClClaimStatusEnum.OPEN
+								: ClClaimStatusEnum.REJECTED)
+						.createdAt(currentDate).usernameCreatedBy(registerNewClaimActionDTO.getCreatedByUsername())
+						.build());
 			}
-			
+
 			log.info("newClClaim = {} ", newClClaim);
 			newClClaim = clClaimRepository.save(newClClaim);
 			return newClClaim;
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 			log.error("registerNewClaimAction = {} ", e.getMessage());
+			throw new ServiceException(e.getMessage());
+		}
+	}
+
+	@Override
+	@Transactional
+	public void registerClaimValueInPaymentModule(RegisterNewClaimActionDTO registerNewClaimActionDTO,
+			ClHouseholdClaim clHouseholdClaim) {
+		try {
+
+			String householdCode = clHouseholdClaim.getHouseholdCode();
+			Long idProgram = clHouseholdClaim.getClProgram().getId();
+
+			String url = endPointRegisterHouseholdClaimValue.replace("{householdCode}", householdCode)
+					.replace("{programId}", idProgram.toString())
+					.replace("{amount}", registerNewClaimActionDTO.getAmountToBeTransferred().toString())
+					.replace("{createdBy}", registerNewClaimActionDTO.getCreatedByUsername());
+
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity request = new HttpEntity<>(headers);
+
+			ResponseEntity<ResponseRegisterHouseholdClaimValueDTO> response = restTemplatePayments.postForEntity(url,
+					request, ResponseRegisterHouseholdClaimValueDTO.class);
+
+			log.info("response.getBody().isResponseOK() = {}", response.getBody().isResponseOK());
+
+			if (!response.getStatusCode().equals(HttpStatus.OK) || !response.getBody().isResponseOK()) {
+				throw new ServiceException("Claim could not be registered in the payment module");
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error("registerClaimValueInPaymentModule = {} ", e.getMessage());
 			throw new ServiceException(e.getMessage());
 		}
 	}
