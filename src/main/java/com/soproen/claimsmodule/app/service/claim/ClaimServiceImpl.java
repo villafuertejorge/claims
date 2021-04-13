@@ -53,7 +53,6 @@ import com.soproen.claimsmodule.app.model.claim.ClClaimStatus;
 import com.soproen.claimsmodule.app.model.claim.ClHouseholdClaim;
 import com.soproen.claimsmodule.app.model.claim.ClHouseholdMemberClaim;
 import com.soproen.claimsmodule.app.repository.claim.ClClaimRepository;
-import com.soproen.claimsmodule.app.repository.claim.CustomMapper;
 import com.soproen.claimsmodule.app.repository.dinamicsearch.ClaimsSpecs;
 import com.soproen.claimsmodule.app.service.catalog.CatalogService;
 
@@ -76,10 +75,9 @@ public class ClaimServiceImpl implements ClaimService {
 	@Autowired
 	@Qualifier("restTemplatePayments")
 	private RestTemplate restTemplatePayments;
-	@Autowired
-	private CustomMapper customMapper;
 	@Value("${app.end-point-register_hh_claim-value}")
 	private String endPointRegisterHouseholdClaimValue;
+	
 	
 
 	@Override
@@ -105,7 +103,7 @@ public class ClaimServiceImpl implements ClaimService {
 
 			ClClaim newClClaim = clClaimRepository.save(newClClaimTmp);
 			String claimNumber = "CL-" + newClClaim.getId();
-			customMapper.updateCustomerFromDto(ClClaimDTO.builder().id(newClClaim.getId()).claimNumber(claimNumber).build(), newClClaim);
+			clClaimRepository.updateClaimNumber(claimNumber, newClClaim.getId());
 			return newClClaim;
 
 		} catch (DataAccessException e) {
