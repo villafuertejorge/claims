@@ -167,7 +167,7 @@ public class ClaimServiceImpl implements ClaimService {
 				final Long idSelectedMemberHowPresentClaim = clClaim.getSelectedMemberHowPresentClaim().getId();
 				clClaim.getClHouseholdsClaim().iterator().next().getClHouseholdMembersClaim().stream().forEach(obj -> {
 					obj.setIsPresentedClaim(Boolean.FALSE);
-					if (obj.getId() == idSelectedMemberHowPresentClaim) {
+					if (obj.getId().intValue() == idSelectedMemberHowPresentClaim.intValue()) {
 						obj.setIsPresentedClaim(Boolean.TRUE);
 					}
 				});
@@ -257,9 +257,10 @@ public class ClaimServiceImpl implements ClaimService {
 							"Complete name of the member who presents the claim",
 							"Address","Telephone/cellphone number",
 							"Type of claim",
-							"Amount of the claim ",
+							"Amount of the claim",
 							"User who filled out the claim",
 							"Transfer institution",
+							"Agency/branch",
 							"Observations",
 							"Name of the officer",
 							"Date of the claim",
@@ -271,8 +272,9 @@ public class ClaimServiceImpl implements ClaimService {
 							"External Receiver Name",
 							"External Receiver Code",
 							"Amount accepted",
-							"Action",
+							"Last Action",
 							"Result",
+							"Details of the result",
 							"Date of the last action taken",
 							"User who registered the action"});
 
@@ -318,6 +320,7 @@ public class ClaimServiceImpl implements ClaimService {
 				: "";
 		
 		String transferInstitution = tmp.getClTransferInstitution() != null ? tmp.getClTransferInstitution().getName() : "";
+		String agency = tmp.getAgencyName()!= null ? tmp.getAgencyName() : "";
 		String claimStatus = clClaimStatus.getStatus().name() ;
 		String createdBy = tmp.getCreatedBy();
 		String observation = tmp.getObservation();
@@ -337,6 +340,7 @@ public class ClaimServiceImpl implements ClaimService {
 		String result ="";
 		String dateLastAction="";
 		String userRegisterAction="";
+		String resultDetails ="";
 		
 		Optional<ClClaimActionRegistry> optClClaimActionRegistry = tmp.getClClaimActionsRegistries().stream().filter(obj -> obj.getClosedAt() == null).findAny();
 		if(optClClaimActionRegistry.isPresent()) {
@@ -345,6 +349,7 @@ public class ClaimServiceImpl implements ClaimService {
 			result = clClaimActionRegistry.getActionResult()!=null?clClaimActionRegistry.getActionResult().name():"";
 			dateLastAction = clClaimActionRegistry.getActionDate()!=null?utilities.formatDate(clClaimActionRegistry.getActionDate(),"dd/MMM/yyyy"):"";
 			userRegisterAction = clClaimActionRegistry.getUsernameCreatedBy()!=null?clClaimActionRegistry.getUsernameCreatedBy():"";
+			resultDetails = clClaimActionRegistry.getDetails()!=null? clClaimActionRegistry.getDetails():"";
 		}
 		
 		
@@ -363,6 +368,7 @@ public class ClaimServiceImpl implements ClaimService {
 				amountOfTheClaim,
 				createdBy,
 				transferInstitution,
+				agency,
 				observation,
 				officerName,
 				claimDate,
@@ -376,6 +382,7 @@ public class ClaimServiceImpl implements ClaimService {
 				amountAccepted,
 				action,
 				result,
+				resultDetails,
 				dateLastAction,
 				userRegisterAction
 				};
@@ -449,6 +456,7 @@ public class ClaimServiceImpl implements ClaimService {
 
 			List<ClClaim> claimList = new ArrayList<>();
 			Pageable sortedByPriceDesc = PageRequest.of(0, 100, Sort.by("id").descending());
+			log.info("searchSpecifications.isEmpty() = {} " ,searchSpecifications.isEmpty());
 			if (searchSpecifications.isEmpty()) {
 				claimList = clClaimRepository.findAll(sortedByPriceDesc).toList();
 			} else {
@@ -523,7 +531,7 @@ public class ClaimServiceImpl implements ClaimService {
 								.createdAt(currentDate)
 								.usernameCreatedBy(registerNewClaimActionDTO.getCreatedByUsername()).build());
 
-				// TODO send amount to payments module
+				// send amount to payments module
 				registerClaimValueInPaymentModule(registerNewClaimActionDTO, newClClaim.getClHouseholdsClaim().get(0));
 
 			} else {
