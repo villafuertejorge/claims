@@ -53,6 +53,7 @@ import com.soproen.claimsmodule.app.model.claim.ClClaimStatus;
 import com.soproen.claimsmodule.app.model.claim.ClHouseholdClaim;
 import com.soproen.claimsmodule.app.model.claim.ClHouseholdMemberClaim;
 import com.soproen.claimsmodule.app.repository.claim.ClClaimRepository;
+import com.soproen.claimsmodule.app.repository.claim.CustomMapper;
 import com.soproen.claimsmodule.app.repository.dinamicsearch.ClaimsSpecs;
 import com.soproen.claimsmodule.app.service.catalog.CatalogService;
 
@@ -75,8 +76,11 @@ public class ClaimServiceImpl implements ClaimService {
 	@Autowired
 	@Qualifier("restTemplatePayments")
 	private RestTemplate restTemplatePayments;
+	@Autowired
+	private CustomMapper customMapper;
 	@Value("${app.end-point-register_hh_claim-value}")
 	private String endPointRegisterHouseholdClaimValue;
+	
 
 	@Override
 	@Transactional
@@ -95,14 +99,20 @@ public class ClaimServiceImpl implements ClaimService {
 					.createdBy(registerNewClaimForHouseholdDTO.getUsernameCreatedBy())
 					.clHouseholdsClaim(Arrays.asList(clHouseholdClaim))
 					.clClaimStatuses(Arrays
-							.asList(ClClaimStatus.builder().createdAt(currentDate).status(ClClaimStatusEnum.CREATED)
+							.asList(ClClaimStatus.builder().createdAt(currentDate).status(ClClaimStatusEnum.INCOMPLETE)
 									.usernameCreatedBy(registerNewClaimForHouseholdDTO.getUsernameCreatedBy()).build()))
 					.build();
 
 			ClClaim newClClaim = clClaimRepository.save(newClClaimTmp);
+			String claimNumber = "CL-" + newClClaim.getId();
+			customMapper.updateCustomerFromDto(ClClaimDTO.builder().id(newClClaim.getId()).claimNumber(claimNumber).build(), newClClaim);
 			return newClClaim;
 
 		} catch (DataAccessException e) {
+			log.error("registerNewClaimForHousehold = {} ", e.getMessage());
+			throw new ServiceException(e.getMessage());
+		}catch(Exception e) {
+			e.printStackTrace();
 			log.error("registerNewClaimForHousehold = {} ", e.getMessage());
 			throw new ServiceException(e.getMessage());
 		}
@@ -199,7 +209,7 @@ public class ClaimServiceImpl implements ClaimService {
 		Map<RequiredClaimFiledsEnum, String> mapResult = new HashMap<>();
 
 		if (!clClaim.getClHouseholdsClaim().iterator().next().getClHouseholdMembersClaim().stream()
-				.filter(obj -> obj.isPresentedClaim!=null && obj.isPresentedClaim).findAny().isPresent()) {
+				.filter(obj -> obj.getIsPresentedClaim()!=null && obj.getIsPresentedClaim()).findAny().isPresent()) {
 			mapResult.put(RequiredClaimFiledsEnum.MEMBER_HOW_PRESENT_CLAIM,
 					env.getProperty("app.claim-fields.member-how-present-claim"));
 		}
@@ -236,47 +246,37 @@ public class ClaimServiceImpl implements ClaimService {
 
 			List<ClClaim> list = searchClaim(searchClaimDTO);
 			List<Object[]> dataList = list.stream().map(tmp -> {
-
-				String selectedMemberFistName = "";
-				String selectedMemberLastName = "";
-				Optional<ClHouseholdMemberClaim> optionalSelectedMember = tmp.getClHouseholdsClaim().get(0)
-						.getClHouseholdMembersClaim().stream().filter(obj -> obj.isPresentedClaim).findAny();
-				if (optionalSelectedMember.isPresent()) {
-					selectedMemberFistName = optionalSelectedMember.get().getFirstName();
-					selectedMemberLastName = optionalSelectedMember.get().getLastName();
-				}
-
-				ClClaimStatus clClaimStatus = tmp.getClClaimStatuses().stream().filter(obj -> obj.getClosedAt() == null)
-						.findAny().get();
-
-				String[] array = new String[] { tmp.getClaimNumber(),
-						tmp.getClHouseholdsClaim().get(0).getHouseholdCode(),
-						tmp.getClHouseholdsClaim().get(0).getClProgram() != null
-								? tmp.getClHouseholdsClaim().get(0).getClProgram().getName()
-								: "",
-						tmp.getClHouseholdsClaim().get(0).getClDistrict() != null
-								? tmp.getClHouseholdsClaim().get(0).getClDistrict().getName()
-								: "",
-						tmp.getClHouseholdsClaim().get(0).getClTa() != null
-								? tmp.getClHouseholdsClaim().get(0).getClTa().getName()
-								: "",
-						tmp.getClHouseholdsClaim().get(0).getClVillage() != null
-								? tmp.getClHouseholdsClaim().get(0).getClVillage().getName()
-								: "",
-						tmp.getClHouseholdsClaim().get(0).getClZone() != null
-								? tmp.getClHouseholdsClaim().get(0).getClZone().getName()
-								: "",
-						selectedMemberFistName, selectedMemberLastName,
-						tmp.getClTransferInstitution() != null ? tmp.getClTransferInstitution().getName() : "",
-						clClaimStatus.getStatus().name(), tmp.getCreatedBy() };
-
-				return array;
-
+				return composeDataForClaimExportedFile(tmp);
 			}).collect(Collectors.toList());
 
 			InputStream newInputSream = csvUtils.createCsvFile(dataList,
-					new String[] { "Claim Number", "Form Number", "Program Name", "District", "TA", "Village", "Zone",
-							"First Name", "Last Name", "Transfer Institution", "Status", "User" });
+					new String[] { 
+							"District",
+							"TA",
+							"Village",
+							"Zone",
+							"Form Number",
+							"Complete name of the member who presents the claim",
+							"Address","Telephone/cellphone number",
+							"Type of claim",
+							"Amount of the claim ",
+							"User who filled out the claim",
+							"Transfer institution",
+							"Observations",
+							"Name of the officer",
+							"Date of the claim",
+							"Status",
+							"Transfer Receiver Name",
+							"Transfer Receiver Code",
+							"Alternative Receiver Name",
+							"Alternative Receiver Code",
+							"External Receiver Name",
+							"External Receiver Code",
+							"Amount accepted",
+							"Action",
+							"Result",
+							"Date of the last action taken",
+							"User who registered the action"});
 
 			return newInputSream;
 
@@ -284,6 +284,105 @@ public class ClaimServiceImpl implements ClaimService {
 			log.error("generateSearchClaimCsvFile = {} ", e.getMessage());
 			throw new ServiceException(e.getMessage());
 		}
+	}
+	
+	private Object[] composeDataForClaimExportedFile(ClClaim tmp) {
+		
+		String selectedMemberFistName = "";
+		String selectedMemberLastName = "";
+		Optional<ClHouseholdMemberClaim> optionalSelectedMember = tmp.getClHouseholdsClaim().get(0)
+				.getClHouseholdMembersClaim().stream().filter(obj -> obj.getIsPresentedClaim()!=null && obj.getIsPresentedClaim()).findAny();
+		if (optionalSelectedMember.isPresent()) {
+			selectedMemberFistName = optionalSelectedMember.get().getFirstName();
+			selectedMemberLastName = optionalSelectedMember.get().getLastName();
+		}
+
+		ClClaimStatus clClaimStatus = tmp.getClClaimStatuses().stream().filter(obj -> obj.getClosedAt() == null)
+				.findAny().get();
+		
+		String householdCode = tmp.getClHouseholdsClaim().get(0).getHouseholdCode();
+		String address = tmp.getClHouseholdsClaim().get(0).getAddress()!=null? tmp.getClHouseholdsClaim().get(0).getAddress():"";
+		String telephone = tmp.getClHouseholdsClaim().get(0).getTelephone()!=null? tmp.getClHouseholdsClaim().get(0).getTelephone():"";
+		String claimType = tmp.getClClaimType()!=null?tmp.getClClaimType().getName():"";
+		String amountOfTheClaim = tmp.getAmountOfTheClaim()!=null?tmp.getAmountOfTheClaim().toString():"";
+		
+		String district = tmp.getClHouseholdsClaim().get(0).getClDistrict() != null
+				? tmp.getClHouseholdsClaim().get(0).getClDistrict().getName()
+				: "";
+		String ta = tmp.getClHouseholdsClaim().get(0).getClTa() != null
+				? tmp.getClHouseholdsClaim().get(0).getClTa().getName()
+				: "";
+		String village = tmp.getClHouseholdsClaim().get(0).getClVillage() != null
+				? tmp.getClHouseholdsClaim().get(0).getClVillage().getName()
+				: "";
+		String zone = tmp.getClHouseholdsClaim().get(0).getClZone() != null
+				? tmp.getClHouseholdsClaim().get(0).getClZone().getName()
+				: "";
+		
+		String transferInstitution = tmp.getClTransferInstitution() != null ? tmp.getClTransferInstitution().getName() : "";
+		String claimStatus = clClaimStatus.getStatus().name() ;
+		String createdBy = tmp.getCreatedBy();
+		String observation = tmp.getObservation();
+		String officerName = tmp.getOfficerName() != null ?tmp.getOfficerName():"";
+		String claimDate = tmp.getCreatedAt()!= null ? utilities.formatDate(tmp.getCreatedAt(),"dd/MMM/yyyy"):"";
+		
+		String transferReceiverName = tmp.getClHouseholdsClaim().get(0).getPaymentReceiverName()!=null?tmp.getClHouseholdsClaim().get(0).getPaymentReceiverName():"";
+		String transferReceiverCode = tmp.getClHouseholdsClaim().get(0).getPaymentReceiverCode()!=null?tmp.getClHouseholdsClaim().get(0).getPaymentReceiverCode():"";
+		String alternativeReceiverName = tmp.getClHouseholdsClaim().get(0).getAlternativeReceiverName()!=null?tmp.getClHouseholdsClaim().get(0).getAlternativeReceiverName():"";
+		String alternativeReceiverCode = tmp.getClHouseholdsClaim().get(0).getAlternativeReceiverCode()!=null?tmp.getClHouseholdsClaim().get(0).getAlternativeReceiverCode():"";
+		String externalReceiverName = tmp.getClHouseholdsClaim().get(0).getExternalReceiverName()!=null?tmp.getClHouseholdsClaim().get(0).getExternalReceiverName():"";
+		String externalReceiverCode = tmp.getClHouseholdsClaim().get(0).getExternalReceiverCode()!=null?tmp.getClHouseholdsClaim().get(0).getExternalReceiverCode():"";
+		String amountAccepted=tmp.getAmountToBeTransferred()!=null?tmp.getAmountToBeTransferred().toString():"";
+		
+
+		String action="";
+		String result ="";
+		String dateLastAction="";
+		String userRegisterAction="";
+		
+		Optional<ClClaimActionRegistry> optClClaimActionRegistry = tmp.getClClaimActionsRegistries().stream().filter(obj -> obj.getClosedAt() == null).findAny();
+		if(optClClaimActionRegistry.isPresent()) {
+			ClClaimActionRegistry clClaimActionRegistry = optClClaimActionRegistry.get();
+			action = clClaimActionRegistry.getClClaimAction()!=null?clClaimActionRegistry.getClClaimAction().getName():"";
+			result = clClaimActionRegistry.getActionResult()!=null?clClaimActionRegistry.getActionResult().name():"";
+			dateLastAction = clClaimActionRegistry.getActionDate()!=null?utilities.formatDate(clClaimActionRegistry.getActionDate(),"dd/MMM/yyyy"):"";
+			userRegisterAction = clClaimActionRegistry.getUsernameCreatedBy()!=null?clClaimActionRegistry.getUsernameCreatedBy():"";
+		}
+		
+		
+		
+		
+		String[] array = new String[] { 
+				district,
+				ta,
+				village,
+				zone,
+				householdCode,
+				selectedMemberFistName + " " + selectedMemberLastName,
+				address,
+				telephone,
+				claimType,
+				amountOfTheClaim,
+				createdBy,
+				transferInstitution,
+				observation,
+				officerName,
+				claimDate,
+				claimStatus,
+				transferReceiverName,
+				transferReceiverCode ,
+				alternativeReceiverName,
+				alternativeReceiverCode ,
+				externalReceiverName ,
+				externalReceiverCode ,
+				amountAccepted,
+				action,
+				result,
+				dateLastAction,
+				userRegisterAction
+				};
+
+		return array;
 	}
 
 	@Override

@@ -46,14 +46,23 @@ public class ClaimController extends AbstractParentController {
 			@Validated(BasicValidation.class) @Valid @RequestBody RegisterNewClaimForHouseholdDTO registerNewClaimForHouseholdDTO,
 			BindingResult bindingResult) {
 		try {
+			
+			log.info("registerNewClaimForHousehold {} " ,registerNewClaimForHouseholdDTO);
 			if (bindingResult.hasErrors()) {
 				return new ResponseEntity<Map<String, Object>>(super.responseError("Validation Error", bindingResult),
 						HttpStatus.OK);
 			}
+			log.info("registerNewClaimForHousehold = {} ",registerNewClaimForHouseholdDTO);
 			ClClaimDTO clClaimDTO = utilities.mapObject(
 					claimService.registerNewClaimForHousehold(registerNewClaimForHouseholdDTO), ClClaimDTO.class);
+			
+			log.info("registerNewClaimForHousehold = {} ",clClaimDTO);
 			return new ResponseEntity<Map<String, Object>>(super.responseOK("OK", clClaimDTO), HttpStatus.OK);
 		} catch (ServiceException e) {
+			log.error("registerNewClaimForHousehold = {} ", e.getMessage());
+			return new ResponseEntity<Map<String, Object>>(super.responseError(e.getMessage()), HttpStatus.OK);
+		}catch(RuntimeException e) {
+			e.printStackTrace();
 			log.error("registerNewClaimForHousehold = {} ", e.getMessage());
 			return new ResponseEntity<Map<String, Object>>(super.responseError(e.getMessage()), HttpStatus.OK);
 		}

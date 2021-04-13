@@ -20,7 +20,7 @@ class ClaimsModuleApplicationTests {
 	@Autowired
 	private ClaimService claimService;
 	
-	@Test
+	//@Test
 	void registerClaimValueInPaymentModule() {
 		
 		RegisterNewClaimActionDTO registerNewClaimActionDTO = RegisterNewClaimActionDTO.builder()

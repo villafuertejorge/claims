@@ -40,6 +40,6 @@ public class ClHouseholdMemberClaim implements Serializable {
 	private Integer age;
 	
 	@Column(name="is_presented_claim")
-	public Boolean isPresentedClaim;
+	private Boolean isPresentedClaim;
 	
 }
